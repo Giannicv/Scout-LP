@@ -1,0 +1,24 @@
+/* ===== variables ===== */
+:root
+{
+    --morado-900:#2E1A47;
+    --morado-800:#3F2463;
+    --morado-700:#52307F;
+    --morado-600:#6A44A0;
+    --morado-500:#8460BC;
+    --morado-100:#EDE7F6;
+    --caqui-700:#8C7B54;
+    --caqui-500:#C3B091;
+    --caqui-300:#DCCFB4;
+    --caqui-100:#F3EDE0;
+    --fondo:#FAF8F3;
+    --blanco:#FFF;
+    --texto:#1F1A2B;
+    --texto-suave:#6B6478;
+    --borde:#E6E0D2;
+    --exito:#52307F;
+    --error:#B3423F;
+    --aviso:#C58B2A;
+    --radio:22px;
+    --sombra:0 12px 40px #2e1a4708
+}

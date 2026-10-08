@@ -1,0 +1,10 @@
+Coloca aquí tus fotografías. El sitio funciona sin ellas gracias a los fondos degradados.
+
+hero.jpg: scouts caminando en la montaña al atardecer.
+nosotros.jpg: actividad de amistad y servicio.
+manada.jpg, tropa.jpg, comunidad.jpg, clan.jpg: actividades de cada rama.
+noticia-1.jpg a noticia-9.jpg: imágenes de las noticias de ejemplo.
+
+Recomendación: JPG o WebP comprimido, ancho 1600 px para el hero y 800 px para tarjetas.
+Las fotos deben tener permiso de uso. También puedes cambiar las rutas desde el panel.
+Las rutas del panel se escriben como img/archivo.jpg, sin ../.

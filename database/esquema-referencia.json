@@ -1,0 +1,3956 @@
+{
+    "tablas": {
+        "actividades": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('actividades_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "unidad_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "titulo",
+                    "type_name": "varchar",
+                    "type": "character varying(200)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "fecha",
+                    "type_name": "date",
+                    "type": "date",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "hora",
+                    "type_name": "time",
+                    "type": "time without time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "'09:00:00'::time without time zone",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "lugar",
+                    "type_name": "varchar",
+                    "type": "character varying(200)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "descripcion",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "requiere_autorizacion",
+                    "type_name": "bool",
+                    "type": "boolean",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "false",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "actividades_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "actividades_unidad_id_fkey",
+                    "columns": [
+                        "unidad_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "unidades",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                }
+            ]
+        },
+        "asistencias": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('asistencias_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "actividad_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "miembro_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "fecha",
+                    "type_name": "date",
+                    "type": "date",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "estado",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "observacion",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": "''::text",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "asistencias_actividad_id_miembro_id_key",
+                    "columns": [
+                        "actividad_id",
+                        "miembro_id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "asistencias_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                },
+                {
+                    "name": "idx_asistencias_miembro",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "type": "btree",
+                    "unique": false,
+                    "primary": false
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "asistencias_actividad_id_fkey",
+                    "columns": [
+                        "actividad_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "actividades",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "asistencias_miembro_id_fkey",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "miembros",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        "auditoria": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int8",
+                    "type": "bigint",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('auditoria_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "actor_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "accion",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "detalle",
+                    "type_name": "jsonb",
+                    "type": "jsonb",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "'{}'::jsonb",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "creado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "auditoria_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "auditoria_actor_id_fkey",
+                    "columns": [
+                        "actor_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                }
+            ]
+        },
+        "autorizaciones": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('autorizaciones_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "actividad_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "miembro_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "tutor_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "estado",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "'pendiente'::text",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "firmada_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "autorizaciones_actividad_id_miembro_id_tutor_id_key",
+                    "columns": [
+                        "actividad_id",
+                        "miembro_id",
+                        "tutor_id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "autorizaciones_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                },
+                {
+                    "name": "idx_autorizaciones_tutor",
+                    "columns": [
+                        "tutor_id"
+                    ],
+                    "type": "btree",
+                    "unique": false,
+                    "primary": false
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "autorizaciones_actividad_id_fkey",
+                    "columns": [
+                        "actividad_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "actividades",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "autorizaciones_miembro_id_fkey",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "miembros",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "autorizaciones_tutor_id_fkey",
+                    "columns": [
+                        "tutor_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "tutores",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        "categorias": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('categorias_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre",
+                    "type_name": "varchar",
+                    "type": "character varying(60)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "slug",
+                    "type_name": "varchar",
+                    "type": "character varying(60)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "categorias_nombre_key",
+                    "columns": [
+                        "nombre"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "categorias_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                },
+                {
+                    "name": "categorias_slug_key",
+                    "columns": [
+                        "slug"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                }
+            ],
+            "relaciones": []
+        },
+        "comunicado_lecturas": {
+            "columnas": [
+                {
+                    "name": "comunicado_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "usuario_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "leido_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "comunicado_lecturas_pkey",
+                    "columns": [
+                        "comunicado_id",
+                        "usuario_id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "comunicado_lecturas_comunicado_id_fkey",
+                    "columns": [
+                        "comunicado_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "comunicados",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "comunicado_lecturas_usuario_id_fkey",
+                    "columns": [
+                        "usuario_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        "comunicados": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('comunicados_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "autor_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "unidad_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "departamento",
+                    "type_name": "varchar",
+                    "type": "character varying(50)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "titulo",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "contenido",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "destino",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "'ambos'::text",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "creado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "comunicados_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "comunicados_autor_id_fkey",
+                    "columns": [
+                        "autor_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                },
+                {
+                    "name": "comunicados_unidad_id_fkey",
+                    "columns": [
+                        "unidad_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "unidades",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                }
+            ]
+        },
+        "contenido_institucional": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('contenido_institucional_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "clave",
+                    "type_name": "varchar",
+                    "type": "character varying(60)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "titulo",
+                    "type_name": "varchar",
+                    "type": "character varying(150)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "contenido",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "actualizado_por",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "actualizado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "contenido_institucional_clave_key",
+                    "columns": [
+                        "clave"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "contenido_institucional_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "contenido_institucional_actualizado_por_fkey",
+                    "columns": [
+                        "actualizado_por"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                }
+            ]
+        },
+        "cuotas": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('cuotas_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "miembro_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "concepto",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "monto",
+                    "type_name": "numeric",
+                    "type": "numeric(12,2)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "estado",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "'pendiente'::text",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "vencimiento",
+                    "type_name": "date",
+                    "type": "date",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "comprobante_nombre",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "registrado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "cuotas_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                },
+                {
+                    "name": "idx_cuotas_miembro",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "type": "btree",
+                    "unique": false,
+                    "primary": false
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "cuotas_miembro_id_fkey",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "miembros",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        "distritos": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('distritos_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre",
+                    "type_name": "varchar",
+                    "type": "character varying(100)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "departamento",
+                    "type_name": "varchar",
+                    "type": "character varying(50)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "distritos_nombre_departamento_key",
+                    "columns": [
+                        "nombre",
+                        "departamento"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "distritos_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": []
+        },
+        "eventos": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('eventos_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "autor_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "rama_id",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "titulo",
+                    "type_name": "varchar",
+                    "type": "character varying(200)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "descripcion",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "lugar",
+                    "type_name": "varchar",
+                    "type": "character varying(200)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "fecha_inicio",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "fecha_fin",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "imagen_url",
+                    "type_name": "varchar",
+                    "type": "character varying(255)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "estado",
+                    "type_name": "estado_publicacion",
+                    "type": "estado_publicacion",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "'borrador'::estado_publicacion",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "creado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "eventos_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                },
+                {
+                    "name": "idx_eventos_fecha",
+                    "columns": [
+                        "fecha_inicio"
+                    ],
+                    "type": "btree",
+                    "unique": false,
+                    "primary": false
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "eventos_autor_id_fkey",
+                    "columns": [
+                        "autor_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                },
+                {
+                    "name": "eventos_rama_id_fkey",
+                    "columns": [
+                        "rama_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "ramas",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                }
+            ]
+        },
+        "fichas_medicas": {
+            "columnas": [
+                {
+                    "name": "miembro_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "alergias",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": "''::text",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "contacto_emergencia",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": "''::text",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "telefono_emergencia",
+                    "type_name": "varchar",
+                    "type": "character varying(30)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": "''::character varying",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "observaciones",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": "''::text",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "fichas_medicas_pkey",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "fichas_medicas_miembro_id_fkey",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "miembros",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        "grupos_scout": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('grupos_scout_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "distrito_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre",
+                    "type_name": "varchar",
+                    "type": "character varying(120)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "direccion",
+                    "type_name": "varchar",
+                    "type": "character varying(200)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "telefono",
+                    "type_name": "varchar",
+                    "type": "character varying(30)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "email",
+                    "type_name": "varchar",
+                    "type": "character varying(150)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "activo",
+                    "type_name": "bool",
+                    "type": "boolean",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "true",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "grupos_scout_distrito_id_nombre_key",
+                    "columns": [
+                        "distrito_id",
+                        "nombre"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "grupos_scout_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "grupos_scout_distrito_id_fkey",
+                    "columns": [
+                        "distrito_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "distritos",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                }
+            ]
+        },
+        "inscripciones": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('inscripciones_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "rama_id",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "grupo_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "miembro_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre_aspirante",
+                    "type_name": "varchar",
+                    "type": "character varying(100)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "apellido_aspirante",
+                    "type_name": "varchar",
+                    "type": "character varying(100)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "fecha_nacimiento",
+                    "type_name": "date",
+                    "type": "date",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre_tutor",
+                    "type_name": "varchar",
+                    "type": "character varying(150)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "telefono_tutor",
+                    "type_name": "varchar",
+                    "type": "character varying(30)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "email_tutor",
+                    "type_name": "varchar",
+                    "type": "character varying(150)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "observaciones",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "estado",
+                    "type_name": "estado_inscripcion",
+                    "type": "estado_inscripcion",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "'pendiente'::estado_inscripcion",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "revisado_por",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "creado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "revisado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "tutor_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "departamento",
+                    "type_name": "varchar",
+                    "type": "character varying(50)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "unidad_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "motivo_rechazo",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "ficha_medica",
+                    "type_name": "jsonb",
+                    "type": "jsonb",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "'{}'::jsonb",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "idx_inscripciones_estado",
+                    "columns": [
+                        "estado"
+                    ],
+                    "type": "btree",
+                    "unique": false,
+                    "primary": false
+                },
+                {
+                    "name": "inscripciones_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "inscripciones_grupo_id_fkey",
+                    "columns": [
+                        "grupo_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "grupos_scout",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                },
+                {
+                    "name": "inscripciones_miembro_id_fkey",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "miembros",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "inscripciones_rama_id_fkey",
+                    "columns": [
+                        "rama_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "ramas",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                },
+                {
+                    "name": "inscripciones_revisado_por_fkey",
+                    "columns": [
+                        "revisado_por"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                },
+                {
+                    "name": "inscripciones_tutor_id_fkey",
+                    "columns": [
+                        "tutor_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "tutores",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "inscripciones_unidad_id_fkey",
+                    "columns": [
+                        "unidad_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "unidades",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                }
+            ]
+        },
+        "insignias": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('insignias_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "requisito_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "rama_id",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "etapa",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "insignias_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                },
+                {
+                    "name": "insignias_requisito_id_key",
+                    "columns": [
+                        "requisito_id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "insignias_rama_id_fkey",
+                    "columns": [
+                        "rama_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "ramas",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                },
+                {
+                    "name": "insignias_requisito_id_fkey",
+                    "columns": [
+                        "requisito_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "requisitos",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        "intentos_login": {
+            "columnas": [
+                {
+                    "name": "clave",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "usuario_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "intentos",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "0",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "bloqueado_hasta",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "intentos_login_pkey",
+                    "columns": [
+                        "clave"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "intentos_login_usuario_id_fkey",
+                    "columns": [
+                        "usuario_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        "mensajes_contacto": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('mensajes_contacto_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre",
+                    "type_name": "varchar",
+                    "type": "character varying(120)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "email",
+                    "type_name": "varchar",
+                    "type": "character varying(150)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "telefono",
+                    "type_name": "varchar",
+                    "type": "character varying(30)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "asunto",
+                    "type_name": "varchar",
+                    "type": "character varying(150)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "mensaje",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "estado",
+                    "type_name": "estado_mensaje",
+                    "type": "estado_mensaje",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "'nuevo'::estado_mensaje",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "creado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "rama_id",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "mensajes_contacto_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "mensajes_contacto_rama_id_fkey",
+                    "columns": [
+                        "rama_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "ramas",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                }
+            ]
+        },
+        "miembro_insignias": {
+            "columnas": [
+                {
+                    "name": "miembro_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "insignia_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "fecha",
+                    "type_name": "date",
+                    "type": "date",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "observacion",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": "''::text",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "registrado_por",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "miembro_insignias_pkey",
+                    "columns": [
+                        "miembro_id",
+                        "insignia_id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "miembro_insignias_insignia_id_fkey",
+                    "columns": [
+                        "insignia_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "insignias",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "miembro_insignias_miembro_id_fkey",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "miembros",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "miembro_insignias_registrado_por_fkey",
+                    "columns": [
+                        "registrado_por"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                }
+            ]
+        },
+        "miembro_requisitos": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('miembro_requisitos_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "miembro_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "requisito_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "fecha",
+                    "type_name": "date",
+                    "type": "date",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "observacion",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": "''::text",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "registrado_por",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "miembro_requisitos_miembro_id_requisito_id_key",
+                    "columns": [
+                        "miembro_id",
+                        "requisito_id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "miembro_requisitos_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "miembro_requisitos_miembro_id_fkey",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "miembros",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "miembro_requisitos_registrado_por_fkey",
+                    "columns": [
+                        "registrado_por"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                },
+                {
+                    "name": "miembro_requisitos_requisito_id_fkey",
+                    "columns": [
+                        "requisito_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "requisitos",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        "miembros": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('miembros_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "grupo_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "rama_id",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "tutor_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre",
+                    "type_name": "varchar",
+                    "type": "character varying(100)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "apellido",
+                    "type_name": "varchar",
+                    "type": "character varying(100)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "ci",
+                    "type_name": "varchar",
+                    "type": "character varying(20)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "fecha_nacimiento",
+                    "type_name": "date",
+                    "type": "date",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "genero",
+                    "type_name": "genero_tipo",
+                    "type": "genero_tipo",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "telefono",
+                    "type_name": "varchar",
+                    "type": "character varying(30)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "email",
+                    "type_name": "varchar",
+                    "type": "character varying(150)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "direccion",
+                    "type_name": "varchar",
+                    "type": "character varying(200)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "fecha_ingreso",
+                    "type_name": "date",
+                    "type": "date",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "CURRENT_DATE",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "activo",
+                    "type_name": "bool",
+                    "type": "boolean",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "true",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "creado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "unidad_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "codigo",
+                    "type_name": "varchar",
+                    "type": "character varying(60)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "rol_patrulla",
+                    "type_name": "varchar",
+                    "type": "character varying(60)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": "'Integrante'::character varying",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "lema",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": "'Siempre listos'::text",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "foto",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": "''::text",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "idx_miembros_grupo",
+                    "columns": [
+                        "grupo_id"
+                    ],
+                    "type": "btree",
+                    "unique": false,
+                    "primary": false
+                },
+                {
+                    "name": "idx_miembros_rama",
+                    "columns": [
+                        "rama_id"
+                    ],
+                    "type": "btree",
+                    "unique": false,
+                    "primary": false
+                },
+                {
+                    "name": "idx_miembros_unidad",
+                    "columns": [
+                        "unidad_id"
+                    ],
+                    "type": "btree",
+                    "unique": false,
+                    "primary": false
+                },
+                {
+                    "name": "miembros_ci_key",
+                    "columns": [
+                        "ci"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "miembros_codigo_key",
+                    "columns": [
+                        "codigo"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "miembros_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "miembros_grupo_id_fkey",
+                    "columns": [
+                        "grupo_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "grupos_scout",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                },
+                {
+                    "name": "miembros_rama_id_fkey",
+                    "columns": [
+                        "rama_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "ramas",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                },
+                {
+                    "name": "miembros_tutor_id_fkey",
+                    "columns": [
+                        "tutor_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "tutores",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                },
+                {
+                    "name": "miembros_unidad_id_fkey",
+                    "columns": [
+                        "unidad_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "unidades",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                }
+            ]
+        },
+        "migraciones": {
+            "columnas": [
+                {
+                    "name": "nombre",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "aplicada_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": true,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "migraciones_pkey",
+                    "columns": [
+                        "nombre"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": []
+        },
+        "noticias": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('noticias_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "autor_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "categoria_id",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "titulo",
+                    "type_name": "varchar",
+                    "type": "character varying(200)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "slug",
+                    "type_name": "varchar",
+                    "type": "character varying(220)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "resumen",
+                    "type_name": "varchar",
+                    "type": "character varying(300)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "contenido",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "imagen_url",
+                    "type_name": "varchar",
+                    "type": "character varying(255)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "estado",
+                    "type_name": "estado_publicacion",
+                    "type": "estado_publicacion",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "'borrador'::estado_publicacion",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "publicado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "creado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "actualizado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "destacada",
+                    "type_name": "bool",
+                    "type": "boolean",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "false",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "idx_noticias_estado_fecha",
+                    "columns": [
+                        "estado",
+                        "publicado_en"
+                    ],
+                    "type": "btree",
+                    "unique": false,
+                    "primary": false
+                },
+                {
+                    "name": "noticias_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                },
+                {
+                    "name": "noticias_slug_key",
+                    "columns": [
+                        "slug"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "noticias_autor_id_fkey",
+                    "columns": [
+                        "autor_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                },
+                {
+                    "name": "noticias_categoria_id_fkey",
+                    "columns": [
+                        "categoria_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "categorias",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                }
+            ]
+        },
+        "ramas": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('ramas_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre",
+                    "type_name": "varchar",
+                    "type": "character varying(60)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "slug",
+                    "type_name": "varchar",
+                    "type": "character varying(60)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "edad_minima",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "edad_maxima",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "descripcion",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "lema",
+                    "type_name": "varchar",
+                    "type": "character varying(150)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "color_hex",
+                    "type_name": "bpchar",
+                    "type": "character(7)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "imagen_url",
+                    "type_name": "varchar",
+                    "type": "character varying(255)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "orden",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "0",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "actividades",
+                    "type_name": "jsonb",
+                    "type": "jsonb",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "'[]'::jsonb",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "ramas_nombre_key",
+                    "columns": [
+                        "nombre"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "ramas_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                },
+                {
+                    "name": "ramas_slug_key",
+                    "columns": [
+                        "slug"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                }
+            ],
+            "relaciones": []
+        },
+        "requisitos": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('requisitos_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "rama_id",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "etapa",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "tipo",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "'Requisito'::text",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "requisitos_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "requisitos_rama_id_fkey",
+                    "columns": [
+                        "rama_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "ramas",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                }
+            ]
+        },
+        "roles": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('roles_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre",
+                    "type_name": "varchar",
+                    "type": "character varying(40)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "descripcion",
+                    "type_name": "varchar",
+                    "type": "character varying(200)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "roles_nombre_key",
+                    "columns": [
+                        "nombre"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "roles_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": []
+        },
+        "semillas": {
+            "columnas": [
+                {
+                    "name": "version",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "creado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "semillas_pkey",
+                    "columns": [
+                        "version"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": []
+        },
+        "sesiones_login": {
+            "columnas": [
+                {
+                    "name": "token_hash",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "usuario_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "actividad",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "sesiones_login_pkey",
+                    "columns": [
+                        "token_hash"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "sesiones_login_usuario_id_fkey",
+                    "columns": [
+                        "usuario_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        "tokens_recuperacion": {
+            "columnas": [
+                {
+                    "name": "token_hash",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "usuario_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "vence_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "tokens_recuperacion_pkey",
+                    "columns": [
+                        "token_hash"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "tokens_recuperacion_usuario_id_fkey",
+                    "columns": [
+                        "usuario_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        "tutores": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('tutores_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre",
+                    "type_name": "varchar",
+                    "type": "character varying(100)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "apellido",
+                    "type_name": "varchar",
+                    "type": "character varying(100)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "ci",
+                    "type_name": "varchar",
+                    "type": "character varying(20)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "telefono",
+                    "type_name": "varchar",
+                    "type": "character varying(30)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "email",
+                    "type_name": "varchar",
+                    "type": "character varying(150)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "parentesco",
+                    "type_name": "varchar",
+                    "type": "character varying(40)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "tutores_ci_key",
+                    "columns": [
+                        "ci"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "tutores_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": []
+        },
+        "unidades": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('unidades_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "grupo_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "rama_id",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre",
+                    "type_name": "varchar",
+                    "type": "character varying(120)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "dirigente_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "idx_unidades_dirigente",
+                    "columns": [
+                        "dirigente_id"
+                    ],
+                    "type": "btree",
+                    "unique": false,
+                    "primary": false
+                },
+                {
+                    "name": "unidades_grupo_id_nombre_key",
+                    "columns": [
+                        "grupo_id",
+                        "nombre"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "unidades_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "unidades_dirigente_id_fkey",
+                    "columns": [
+                        "dirigente_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "usuarios",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                },
+                {
+                    "name": "unidades_grupo_id_fkey",
+                    "columns": [
+                        "grupo_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "grupos_scout",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                },
+                {
+                    "name": "unidades_rama_id_fkey",
+                    "columns": [
+                        "rama_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "ramas",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                }
+            ]
+        },
+        "usuarios": {
+            "columnas": [
+                {
+                    "name": "id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "nextval('usuarios_id_seq'::regclass)",
+                    "auto_increment": true,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "rol_id",
+                    "type_name": "int2",
+                    "type": "smallint",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "nombre",
+                    "type_name": "varchar",
+                    "type": "character varying(100)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "apellido",
+                    "type_name": "varchar",
+                    "type": "character varying(100)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "email",
+                    "type_name": "varchar",
+                    "type": "character varying(150)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "password_hash",
+                    "type_name": "varchar",
+                    "type": "character varying(255)",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "activo",
+                    "type_name": "bool",
+                    "type": "boolean",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "true",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "ultimo_acceso",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "creado_en",
+                    "type_name": "timestamptz",
+                    "type": "timestamp with time zone",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "now()",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "telefono",
+                    "type_name": "varchar",
+                    "type": "character varying(30)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": "''::character varying",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "avatar_url",
+                    "type_name": "text",
+                    "type": "text",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "departamento",
+                    "type_name": "varchar",
+                    "type": "character varying(50)",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "distrito_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "tutor_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "miembro_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": true,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "version_acceso",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": "0",
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "idx_usuarios_distrito",
+                    "columns": [
+                        "distrito_id"
+                    ],
+                    "type": "btree",
+                    "unique": false,
+                    "primary": false
+                },
+                {
+                    "name": "usuarios_email_key",
+                    "columns": [
+                        "email"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "usuarios_miembro_id_key",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                },
+                {
+                    "name": "usuarios_pkey",
+                    "columns": [
+                        "id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                },
+                {
+                    "name": "usuarios_tutor_id_key",
+                    "columns": [
+                        "tutor_id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": false
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "usuarios_distrito_id_fkey",
+                    "columns": [
+                        "distrito_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "distritos",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "set null"
+                },
+                {
+                    "name": "usuarios_miembro_id_fkey",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "miembros",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "usuarios_rol_id_fkey",
+                    "columns": [
+                        "rol_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "roles",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "no action"
+                },
+                {
+                    "name": "usuarios_tutor_id_fkey",
+                    "columns": [
+                        "tutor_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "tutores",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        },
+        "vinculos_familia": {
+            "columnas": [
+                {
+                    "name": "tutor_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                },
+                {
+                    "name": "miembro_id",
+                    "type_name": "int4",
+                    "type": "integer",
+                    "collation": null,
+                    "nullable": false,
+                    "default": null,
+                    "auto_increment": false,
+                    "comment": null,
+                    "generation": null
+                }
+            ],
+            "indices": [
+                {
+                    "name": "vinculos_familia_pkey",
+                    "columns": [
+                        "tutor_id",
+                        "miembro_id"
+                    ],
+                    "type": "btree",
+                    "unique": true,
+                    "primary": true
+                }
+            ],
+            "relaciones": [
+                {
+                    "name": "vinculos_familia_miembro_id_fkey",
+                    "columns": [
+                        "miembro_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "miembros",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                },
+                {
+                    "name": "vinculos_familia_tutor_id_fkey",
+                    "columns": [
+                        "tutor_id"
+                    ],
+                    "foreign_schema": "public",
+                    "foreign_table": "tutores",
+                    "foreign_columns": [
+                        "id"
+                    ],
+                    "on_update": "no action",
+                    "on_delete": "cascade"
+                }
+            ]
+        }
+    },
+    "restricciones": [
+        {
+            "tabla": "ramas",
+            "nombre": "ramas_check",
+            "definicion": "CHECK ((edad_maxima >= edad_minima))"
+        },
+        {
+            "tabla": "eventos",
+            "nombre": "eventos_check",
+            "definicion": "CHECK (((fecha_fin IS NULL) OR (fecha_fin >= fecha_inicio)))"
+        },
+        {
+            "tabla": "requisitos",
+            "nombre": "requisitos_tipo_check",
+            "definicion": "CHECK ((tipo = ANY (ARRAY['Requisito'::text, 'Insignia'::text])))"
+        },
+        {
+            "tabla": "autorizaciones",
+            "nombre": "autorizaciones_estado_check",
+            "definicion": "CHECK ((estado = ANY (ARRAY['pendiente'::text, 'firmada'::text, 'rechazada'::text])))"
+        },
+        {
+            "tabla": "asistencias",
+            "nombre": "asistencias_estado_check",
+            "definicion": "CHECK ((estado = ANY (ARRAY['presente'::text, 'ausente'::text, 'justificado'::text])))"
+        },
+        {
+            "tabla": "comunicados",
+            "nombre": "comunicados_destino_check",
+            "definicion": "CHECK ((destino = ANY (ARRAY['ambos'::text, 'familia'::text, 'miembro'::text])))"
+        },
+        {
+            "tabla": "cuotas",
+            "nombre": "cuotas_estado_check",
+            "definicion": "CHECK ((estado = ANY (ARRAY['pendiente'::text, 'en_revision'::text, 'pagado'::text, 'vencido'::text])))"
+        },
+        {
+            "tabla": "cuotas",
+            "nombre": "cuotas_monto_check",
+            "definicion": "CHECK ((monto >= (0)::numeric))"
+        }
+    ]
+}
