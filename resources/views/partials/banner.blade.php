@@ -2,19 +2,19 @@
     <div class="container banner reveal">
         <div>
             <p class="eyebrow" style="color:var(--caqui-300)">
-                LA AVENTURA EMPIEZA AQUÍ
+                UNA AVENTURA PARA CADA EDAD
             </p>
             <h2>
-                Sé parte del
+                Descubre el camino
                 <br>
-                movimiento scout.
+                de cada rama.
             </h2>
             <p>
-                Hay un lugar para ti. Y mucho por descubrir.
+                Conoce sus edades, lemas y propuesta educativa.
             </p>
         </div>
-        <a class="btn khaki" href="{{ route('nosotros', ['asunto' => 'Inscripción']) }}#contacto">
-            Inscríbete
+        <a class="btn khaki" href="{{ route('ramas') }}">
+            Conocer las ramas
             <x-icono nombre="compass" />
         </a>
     </div>

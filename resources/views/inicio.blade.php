@@ -1,37 +1,42 @@
 @extends('layouts.publico')
 @section('titulo', 'Inicio | Scouts de Bolivia')
 @section('contenido')
-    <section class="hero container">
-        <p class="eyebrow">
-            UNA VIDA DE AVENTURAS. UN MUNDO MEJOR.
-        </p>
-        <h1>
-            Formando líderes
-            <br>
-            desde
-            <span style="color:var(--morado-700)">
-                1911.
-            </span>
-        </h1>
-        <p class="lead">
-            Un movimiento juvenil que ayuda a niñas, niños y jóvenes a crecer con valores, aventura y servicio.
-        </p>
-        <div class="actions">
-            <a class="btn" href="{{ route('nosotros', ['asunto' => 'Inscripción']) }}#contacto">
-                Únete a la aventura
-            </a>
-            <a class="btn secondary" href="{{ route('ramas') }}">
-                Conoce las ramas
-            </a>
+    <section class="hero home-hero container">
+        <div class="hero-copy">
+            <p class="eyebrow">UNA VIDA DE AVENTURAS</p>
+            <h1>
+                Crecer, servir
+                <br>
+                y dejar huella.
+            </h1>
+            <p class="lead">
+                El movimiento juvenil que acompaña a niñas, niños y jóvenes a descubrir su potencial mediante valores, aventura y servicio.
+            </p>
+            <div class="actions">
+                <a class="btn" href="{{ route('ramas') }}">
+                    Explora las ramas
+                    <span aria-hidden="true">→</span>
+                </a>
+                <a class="btn secondary" href="{{ route('noticias.index') }}">
+                    Historias y noticias
+                </a>
+            </div>
+            <div class="hero-proof" aria-label="Trayectoria del movimiento scout">
+                <strong>Desde 1911</strong>
+                <span>Formando jóvenes que construyen un mundo mejor.</span>
+            </div>
         </div>
-        <x-imagen ruta="img/hero.jpg" descripcion="Jóvenes scouts caminando en la montaña al atardecer" clase="hero-media" />
-        <div class="photo-caption">
-            <span>
-                Bolivia · Un país por descubrir
-            </span>
-            <span>
-                Siempre listos para la próxima aventura
-            </span>
+        <div class="hero-visual">
+            <x-imagen
+                ruta="img/scout-salar.jpg"
+                descripcion="Scouts contemplando el salar y las montañas del altiplano boliviano"
+                clase="hero-media"
+                :prioritaria="true" />
+            <div class="hero-float-card">
+                <x-icono nombre="compass" />
+                <span><strong>Siempre listos</strong> para la próxima aventura</span>
+            </div>
+            <p class="photo-caption">Bolivia · Un país por descubrir</p>
         </div>
     </section>
     <section class="ideas">
@@ -73,9 +78,9 @@
                     Encuentra tu rama ↗
                 </a>
             </div>
-            <div class="grid four">
+            <div class="grid four branch-card-grid">
                 @foreach ($ramasPublicas as $rama)
-                    <article class="card reveal">
+                    <article class="card reveal branch-card" style="--rama-accent:{{ $rama->color_hex }}">
                         <a class="cover-link" href="{{ route('ramas') }}#{{ $rama->slug }}">
                             <x-imagen :ruta="$rama->imagen_url" :descripcion="$rama->nombre.' · '.$rama->lema" />
                             <div class="card-body">
@@ -102,7 +107,7 @@
         </div>
     </section>
     <section class="stats">
-        <div class="container grid four">
+        <div class="container grid four stats-grid">
             @foreach ([[1911, 'Año de fundación'], [9, 'Departamentos'], [7900, 'Miembros activos'],
                 [4, 'Ramas educativas']] as $estadistica)
                 <div class="stat">
@@ -116,7 +121,7 @@
             @endforeach
         </div>
     </section>
-    <section class="section alternate">
+    <section class="section alternate" id="historias">
         <div class="container">
             <div class="section-head">
                 <div>
@@ -134,7 +139,7 @@
                     Ver todas las noticias ↗
                 </a>
             </div>
-            <div class="grid three">
+            <div class="grid three story-grid">
                 @forelse ($noticias as $noticia)
                     <x-noticia :noticia="$noticia" />
                 @empty

@@ -12,16 +12,11 @@ class ContenidoInstitucional extends Model
 {
     protected $table = 'contenido_institucional';
 
-    public const CREATED_AT = null;
-
-    public const UPDATED_AT = 'actualizado_en';
-
     protected $fillable = [
         'clave',
         'titulo',
         'contenido',
         'actualizado_por',
-        'actualizado_en',
     ];
 
     protected function casts(): array
@@ -29,7 +24,6 @@ class ContenidoInstitucional extends Model
         return [
             'id' => 'integer',
             'actualizado_por' => 'integer',
-            'actualizado_en' => 'datetime',
         ];
     }
 

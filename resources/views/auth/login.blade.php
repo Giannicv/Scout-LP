@@ -22,7 +22,7 @@
     <p>
         ¿Primera vez aquí?
         <a href="{{ route('registro') }}">
-            Registrar mi familia
+            Solicitar una cuenta
         </a>
     </p>
     @if (app()->environment('local'))
@@ -30,12 +30,9 @@
             <summary>
                 Cuentas de demostración
             </summary>
-            @foreach (['admin' => 'admin123', 'coordinador' => 'coord123', 'dirigente' => 'jefe123',
-                'familia' => 'familia123', 'miembro' => 'scout123'] as $cuenta => $passwordDemo)
+            @foreach (['distrito@scoutlapaz.bo', 'dirigente1@scoutlapaz.bo', 'miembro1@scoutlapaz.bo'] as $cuenta)
                 <p>
-                    {{ $cuenta }}
-                    @scouts.bo /
-                    {{ $passwordDemo }}
+                    {{ $cuenta }} / Scout2026!
                 </p>
             @endforeach
         </details>

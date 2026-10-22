@@ -8,13 +8,6 @@
                     <br>
                     con una pequeña aventura.
                 </p>
-                <div class="socials">
-                    @foreach (['facebook', 'instagram', 'youtube'] as $redSocial)
-                        <a href="{{ route('contacto') }}#contacto" aria-label="Consultar nuestra red {{ $redSocial }}">
-                            <x-icono :nombre="$redSocial" />
-                        </a>
-                    @endforeach
-                </div>
             </div>
             <div>
                 <h3>
@@ -27,10 +20,10 @@
                     Nosotros
                 </a>
                 <a href="{{ route('noticias.index') }}">
-                    Noticias y eventos
+                    Historias y noticias
                 </a>
                 <a href="{{ route('login') }}">
-                    Acceso administrador
+                    Acceso Scout
                 </a>
             </div>
             <div>
@@ -44,19 +37,10 @@
                 @endforeach
             </div>
             <div>
-                <h3>
-                    Hablemos
-                </h3>
-                <a href="{{ route('contacto') }}#contacto">
-                    La Paz, Bolivia
-                </a>
-                <span>
-                    Correo y teléfono: por confirmar
-                </span>
+                <h3>Distrito La Paz</h3>
+                <span>Información institucional e historias del movimiento.</span>
                 <p>
-                    Acércate al movimiento.
-                    <br>
-                    Encuentra tu lugar.
+                    Siempre listos para servir.
                 </p>
             </div>
         </div>
@@ -80,7 +64,7 @@
         Privacidad
     </h2>
     <p>
-        El formulario guarda la consulta en la base PostgreSQL del servidor.
+        El sitio protege los datos de acceso y la información interna de sus miembros.
     </p>
     <button data-cerrar-dialogo>
         Cerrar
@@ -91,7 +75,7 @@
         Términos
     </h2>
     <p>
-        Sitio de demostración. Verifica noticias, eventos y datos de contacto antes de una publicación oficial.
+        Sitio de demostración. Verifica las noticias antes de una publicación oficial.
     </p>
     <button data-cerrar-dialogo>
         Cerrar

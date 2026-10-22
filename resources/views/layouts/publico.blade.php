@@ -11,6 +11,7 @@
             @yield('titulo', 'Scouts de Bolivia')
         </title>
         <link rel="icon" href="{{ asset('img/favicon.svg') }}" type="image/svg+xml">
+        <script src="{{ asset('js/tema.js') }}"></script>
         @foreach (['variables', 'base', 'componentes', 'publico', 'panel'] as $hojaEstilo)
             <link rel="stylesheet" href="{{ asset('css/'.$hojaEstilo.'.css') }}">
         @endforeach

@@ -1,73 +1,63 @@
-# Scouts de Bolivia · Laravel 12
+# Scout Distrito La Paz · Laravel 12
 
-Aplicación PHP 8.2 con PostgreSQL `scoutbo`, vistas Blade y assets estáticos.
-No necesita Node.js, npm, Vite, Breeze ni Sanctum. El proyecto anterior se conserva intacto.
+Primera fase web de la plataforma de gestión de eventos descrita en el perfil del proyecto.
+Usa PHP 8.2+, Laravel 12, Blade y PostgreSQL. No requiere Node, Vite ni una API móvil.
 
-## Arrancar en este equipo
+## Instalación local
 
-Abre una terminal PowerShell y ejecuta:
-
-```powershell
-cd "C:\Users\rufin\OneDrive\Documentos\Scaut - Proyecto\scouts-bolivia-laravel"
-& 'C:\xampp\php\php.exe' artisan serve
-```
-
-Abre http://127.0.0.1:8000. Si otro servidor ocupa ese puerto:
+En XAMPP habilita `pdo_pgsql`, `pgsql` e `intl` en `C:\xampp\php\php.ini`. Crea en
+pgAdmin una base vacía llamada `scoutbo` cuyo propietario sea `postgres`.
 
 ```powershell
-& 'C:\xampp\php\php.exe' artisan serve --port=8012
+composer install
+Copy-Item .env.example .env
+php artisan key:generate
 ```
 
-En ese caso abre http://127.0.0.1:8012. Detén el servidor con Ctrl+C.
-El documento público de un alojamiento debe apuntar a `public/`, nunca a la raíz del proyecto.
-No inicies Laravel con el `router.php` del proyecto anterior.
-
-## Conexión
-
-El `.env` del destino está configurado para PostgreSQL, localhost:5432, base scoutbo.
-No contiene copias de los scripts PHP del origen. Las credenciales no se incluyen en `.env.example`.
-Las sesiones y la caché usan archivos; las contraseñas existentes se verifican con bcrypt.
+Completa `DB_PASSWORD` en `.env` con la contraseña del usuario PostgreSQL (no la contraseña
+maestra de pgAdmin si son distintas). Para reconstruir la base de desarrollo y cargar ejemplos:
 
 ```powershell
-php artisan db:show
+php artisan migrate:fresh --seed
+php artisan serve
 ```
 
-El endpoint `/salud` debe devolver `ok: true` y `base: scoutbo`.
-En pgAdmin abre Query Tool sobre scoutbo y ejecuta las consultas de `database/verificacion.sql`.
+Abre http://127.0.0.1:8000. El servidor web debe publicar la carpeta `public/`.
 
-## Cuentas locales de demostración
+## Cuentas de demostración
 
-| Rol | Correo | Contraseña |
-|---|---|---|
-| Administrador | admin@scouts.bo | admin123 |
-| Coordinador | coordinador@scouts.bo | coord123 |
-| Dirigente | dirigente@scouts.bo | jefe123 |
-| Familia | familia@scouts.bo | familia123 |
-| Miembro | miembro@scouts.bo | scout123 |
+Todas usan la contraseña `Scout2026!`.
 
-Las cuentas se conservan en la base existente. Los seeders no sobrescriben sus contraseñas.
+| Rol | Correo |
+|---|---|
+| Dirigente distrital | distrito@scoutlapaz.bo |
+| Dirigente grupo Illimani | dirigente1@scoutlapaz.bo |
+| Dirigente grupo Mururata | dirigente2@scoutlapaz.bo |
+| Dirigente grupo Sajama | dirigente3@scoutlapaz.bo |
+| Miembro Lobatos | miembro1@scoutlapaz.bo |
+| Miembro Exploradores | miembro2@scoutlapaz.bo |
+| Miembro Pioneros | miembro3@scoutlapaz.bo |
+| Miembro Rovers | miembro4@scoutlapaz.bo |
 
-## Organización del código
+## Alcance implementado
 
-- `routes/web.php`: rutas públicas y grupos de los cinco roles.
-- `resources/views/layouts/`: estructuras compartidas del sitio, acceso y paneles.
-- `resources/views/{rol}/`: una vista por cada sección de cada rol.
-- `resources/views/panel/`: tablas, formularios y bloques compartidos.
-- `resources/views/components/`: campos, imágenes, iconos y marca.
-- `app/Http/Controllers/`: prepara páginas y ejecuta las operaciones.
-- `app/Http/Requests/`: valida formularios antes de guardar.
-- `app/Http/Middleware/`: comprueba roles y vigencia de sesión.
-- `app/Models/`: tablas y relaciones Eloquent, con nombres españoles explícitos.
-- `app/Services/`: alcance de los datos, guardados y borrados transaccionales.
-- `config/recursos.php`: campos permitidos de cada formulario.
-- `public/css/`, `public/js/`, `public/img/`: estilos, interacciones e imágenes del sitio.
-- `database/migrations/`, `database/seeders/`: reconstrucción del esquema y datos demo.
-- `tests/Feature/`: pruebas de rutas, formularios, roles, borrados y semillas.
+- Roles: dirigente distrital, dirigente de grupo y miembro.
+- Solicitudes de cuenta con aprobación distrital o por el dirigente del mismo grupo.
+- Ramas oficiales: Lobatos, Exploradores, Pioneros y Rovers.
+- Eventos unificados (`actividad`, `evento`, `proyecto_rover`) para una o varias ramas.
+- Propuestas de Proyecto Rover y aprobación/rechazo.
+- Inscripción única con validación de estado, ventana, cupo y rama.
+- Contactos de tutor/emergencia sin cuentas familiares.
+- Historias/noticias administrables por el dirigente distrital, con selección de destacadas para la portada.
+- Biblioteca digital en Laravel Storage.
+- Notificaciones internas y auditoría de acciones críticas.
+- Interfaz responsive con temas claro y oscuro, detección del sistema y preferencia persistente.
 
-Consulta `docs/GUIA-DEL-CODIGO.md` para aprender por dónde empezar y
-`docs/MIGRACION.md` para el mapeo detallado de todos los archivos del origen.
+No forman parte de esta fase: aplicación móvil/API, cuentas familiares, unidades, asistencia,
+cuotas, fichas médicas, insignias/progresión, admisión al movimiento ni autorizaciones digitales
+individuales. El evento solo registra si requiere una autorización física y sus instrucciones.
 
-## Verificar
+## Verificación
 
 ```powershell
 php artisan route:list
@@ -77,48 +67,21 @@ php vendor/bin/pint --test
 php artisan test
 ```
 
-Las pruebas de integración usan PostgreSQL y revierten los registros creados mediante
-transacciones. No usan `RefreshDatabase`, no ejecutan migraciones y no vacían tablas.
-Las secuencias de PostgreSQL pueden avanzar aunque una transacción se revierta.
-Las pruebas de navegador se realizaron con el runtime de herramientas de Codex;
-no hay dependencia de Node para ejecutar esta aplicación.
+`/salud` comprueba que la aplicación responde sin revelar el nombre ni otros detalles de la base.
+La migración base tiene `up()` y `down()` funcionales. `migrate:fresh` elimina todos los datos;
+úsalo únicamente para desarrollo o tras un respaldo explícito.
 
-## Migraciones y respaldo
+Las pruebas usan SQLite en memoria, se migran y se siembran de forma aislada en cada ejecución;
+no escriben en `scoutbo`. PostgreSQL mantiene restricciones adicionales para estados, fechas,
+costos y cupos mediante una migración reversible.
 
-El sitio ya puede leer y escribir en la base existente sin reconstruirla.
-Se preparó una migración que crea las tablas faltantes y conserva las existentes.
-No se ejecutó `php artisan migrate` sobre scoutbo durante esta edición: el documento
-del proyecto exige confirmación explícita previa. Tampoco se ejecutó un reinicio de datos.
-El respaldo previo está en `database/backup/`, excluido de Git.
+## Antes de publicar
 
-Cuando autorices registrar la migración de Laravel:
+- Cambia `APP_ENV=production` y `APP_DEBUG=false`.
+- Usa HTTPS y establece `SESSION_SECURE_COOKIE=true`.
+- Configura un correo real para recuperación de contraseña.
+- Ejecuta `php artisan config:cache`, `route:cache` y `view:cache` durante el despliegue.
+- Respalda PostgreSQL y `storage/app/private`, donde vive la biblioteca digital.
 
-```powershell
-php artisan migrate
-```
-
-Solo para una base nueva o una reconstrucción deliberada y respaldada:
-
-```powershell
-php artisan migrate:fresh --seed
-```
-
-**Este último comando borra las tablas y todos sus datos antes de cargar ejemplos.**
-No lo necesitas para ver esta migración del sitio. La reconstrucción desde una base vacía
-no se ejecutó sobre scoutbo, para preservar tus datos. La migración base no admite rollback
-destructivo automático: para revertirla se debe restaurar un respaldo.
-
-## Alcance
-
-La recuperación de contraseña sigue siendo simulada: muestra un enlace de diez minutos
-solo con APP_ENV=local. No envía correo. Los comprobantes guardan únicamente un nombre
-de archivo, sin subir archivos ni procesar dinero. Se conservan los marcadores de fotos
-cuando los archivos originales no contienen una imagen real.
-
-El reinicio masivo de ejemplos se ofrece como comando explícito y documentado, no como
-botón dentro del panel. Los formularios usan Blade y envíos HTTP tradicionales; algunos
-campos se presentan separados (nombre y apellidos, fecha de nacimiento) para corresponder
-con el esquema. Se conservan colores, CSS, contenidos públicos y estructura de paneles;
-no se afirma una igualdad de píxeles de todas las pantallas del prototipo.
-
-Errores técnicos: consulta `storage/logs/laravel.log`. Las trazas están ocultas en el navegador.
+Consulta [docs/AUDITORIA-ALINEACION-PERFIL.md](docs/AUDITORIA-ALINEACION-PERFIL.md) para el
+contraste entre el perfil, la especificación y la implementación.

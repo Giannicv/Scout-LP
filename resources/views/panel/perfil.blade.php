@@ -1,45 +1,11 @@
-<h2>
-    Así soy yo.
-</h2>
-<p>
-    Actualiza tu contacto y tu lema personal.
-</p>
-@php($miembroPerfil = $miembros->first())
-@if ($miembroPerfil)
-    <div class="grid two">
-        <section class="panel">
-            <form method="POST" action="{{ route('miembro.operacion', ['accion' => 'perfil']) }}">
-                @csrf
-                <x-imagen :ruta="$miembroPerfil->foto" :descripcion="$usuario->nombre" clase="profile-photo" />
-                <x-campo nombre="nombre" etiqueta="Nombre" :valor="$usuario->nombre" requerido />
-                <x-campo nombre="apellido" etiqueta="Apellidos" :valor="$usuario->apellido" requerido />
-                <x-campo nombre="email" etiqueta="Correo electrónico" tipo="email"
-                    :valor="$usuario->email" requerido />
-                <x-campo nombre="telefono" etiqueta="Teléfono" :valor="$usuario->telefono" />
-                <x-campo nombre="foto" etiqueta="Foto (URL https:// o ruta img/)" :valor="$miembroPerfil->foto" />
-                <x-campo nombre="lema" etiqueta="Mi lema personal" :valor="$miembroPerfil->lema" />
-                <button>
-                    Guardar perfil
-                </button>
-            </form>
-        </section>
-        <section class="panel">
-            <h2>
-                Cambiar contraseña
-            </h2>
-            <form method="POST" action="{{ route('password.cambiar') }}">
-                @csrf
-                <x-campo nombre="actual" etiqueta="Contraseña actual" tipo="password" requerido />
-                <x-campo nombre="password" etiqueta="Nueva contraseña" tipo="password" requerido />
-                <x-campo nombre="password_confirmation" etiqueta="Confirmar contraseña" tipo="password" requerido />
-                <button>
-                    Cambiar contraseña
-                </button>
-            </form>
-        </section>
-    </div>
-@else
-    <p>
-        Pide al administrador que vincule tu ficha de miembro.
-    </p>
-@endif
+@extends('layouts.panel', ['titulo' => 'Mi perfil'])
+@section('contenido')
+<section class="card"><h2>{{ $miembro->nombre }} {{ $miembro->apellido }}</h2><p>{{ $miembro->grupo->nombre }} · {{ $miembro->rama->nombre }}</p></section>
+<section><h2>Contactos de tutor o emergencia</h2>
+@foreach($miembro->contactos as $contacto)<article class="card"><strong>{{ $contacto->nombre }}</strong><p>{{ $contacto->parentesco }} · {{ $contacto->telefono }} · {{ ucfirst($contacto->tipo) }}</p>
+<form method="POST" action="{{ route('perfil.contactos.destroy', $contacto) }}">@csrf @method('DELETE')<button class="btn secondary small">Eliminar</button></form></article>@endforeach
+<form method="POST" action="{{ route('perfil.contactos.store') }}" class="card">@csrf<h3>Agregar contacto</h3>
+<x-campo nombre="nombre" etiqueta="Nombre completo" requerido /><x-campo nombre="parentesco" etiqueta="Parentesco" /><x-campo nombre="telefono" etiqueta="Teléfono" requerido />
+<label>Tipo<select name="tipo"><option value="emergencia">Emergencia</option><option value="tutor">Tutor</option><option value="ambos">Tutor y emergencia</option></select></label><button class="btn">Guardar</button></form>
+</section>
+@endsection

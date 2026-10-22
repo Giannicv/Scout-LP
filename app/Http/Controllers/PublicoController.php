@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ContactoRequest;
+use App\Models\Categoria;
 use App\Models\ContenidoInstitucional;
-use App\Models\Evento;
-use App\Models\MensajeContacto;
 use App\Models\Noticia;
 use Illuminate\Http\Request;
 
@@ -35,14 +33,16 @@ class PublicoController extends Controller
         }
         $total = $consulta->count();
         $noticias = $consulta->latest('publicado_en')->limit($limite)->get();
-        $eventos = Evento::where('estado', 'publicado')->where('fecha_inicio', '>=', now())
-            ->orderBy('fecha_inicio')->get();
+        $categorias = Categoria::whereHas('noticiasPorCategoriaId', fn ($noticias) => $noticias
+            ->where('estado', 'publicado'))
+            ->orderBy('nombre')
+            ->pluck('nombre');
         if ($request->wantsJson()) {
             return response()->json(['html' => view('partials.lista-noticias', compact('noticias'))->render(),
                 'total' => $total, 'limite' => $limite]);
         }
 
-        return view('noticias', compact('noticias', 'total', 'limite', 'eventos'));
+        return view('noticias', compact('noticias', 'total', 'limite', 'categorias'));
     }
 
     public function noticia(Noticia $noticia)
@@ -60,12 +60,5 @@ class PublicoController extends Controller
         $contenidos = ContenidoInstitucional::get()->keyBy('clave');
 
         return view('nosotros', compact('contenidos'));
-    }
-
-    public function contacto(ContactoRequest $request)
-    {
-        MensajeContacto::create($request->safe()->except('aceptacion'));
-
-        return redirect()->route('mensaje-enviado');
     }
 }

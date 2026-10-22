@@ -13,12 +13,6 @@ class GrupoScout extends Model
 {
     protected $table = 'grupos_scout';
 
-    public const CREATED_AT = null;
-
-    public const UPDATED_AT = null;
-
-    public $timestamps = false;
-
     protected $fillable = [
         'distrito_id',
         'nombre',
@@ -42,18 +36,13 @@ class GrupoScout extends Model
         return $this->belongsTo(Distrito::class, 'distrito_id');
     }
 
-    public function inscripcionesPorGrupoId(): HasMany
-    {
-        return $this->hasMany(Inscripcion::class, 'grupo_id');
-    }
-
-    public function miembrosPorGrupoId(): HasMany
+    public function miembros(): HasMany
     {
         return $this->hasMany(Miembro::class, 'grupo_id');
     }
 
-    public function unidadesPorGrupoId(): HasMany
+    public function usuarios(): HasMany
     {
-        return $this->hasMany(Unidad::class, 'grupo_id');
+        return $this->hasMany(User::class, 'grupo_id');
     }
 }

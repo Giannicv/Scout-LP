@@ -12,10 +12,6 @@ class Noticia extends Model
 {
     protected $table = 'noticias';
 
-    public const CREATED_AT = 'creado_en';
-
-    public const UPDATED_AT = 'actualizado_en';
-
     protected $fillable = [
         'autor_id',
         'categoria_id',
@@ -26,8 +22,6 @@ class Noticia extends Model
         'imagen_url',
         'estado',
         'publicado_en',
-        'creado_en',
-        'actualizado_en',
         'destacada',
     ];
 
@@ -38,8 +32,6 @@ class Noticia extends Model
             'autor_id' => 'integer',
             'categoria_id' => 'integer',
             'publicado_en' => 'datetime',
-            'creado_en' => 'datetime',
-            'actualizado_en' => 'datetime',
             'destacada' => 'boolean',
         ];
     }

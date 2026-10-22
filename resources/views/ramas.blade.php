@@ -23,7 +23,7 @@
     </nav>
     @foreach ($ramasPublicas as $rama)
         <section @class(['section', 'branch-section', 'alternate' => $loop->even]) id="{{ $rama->slug }}">
-            <div class="container branch-layout">
+            <div class="container branch-layout" style="--rama-accent:{{ $rama->color_hex }}">
                 <x-imagen :ruta="$rama->imagen_url" :descripcion="$rama->nombre.' al aire libre'" />
                 <div class="reveal">
                     <p class="eyebrow">
@@ -41,21 +41,9 @@
                     <p class="muted">
                         {{ $rama->descripcion }}
                     </p>
-                    <ul>
-                        @foreach ($rama->actividades as $actividadRama)
-                            <li>
-                                {{ $actividadRama }}
-                            </li>
-                        @endforeach
-                    </ul>
-                    <a
-                        class="btn"
-                        href="{{ route('nosotros', ['asunto' => 'Inscripción', 'rama_id' => $rama->id]) }}#contacto">
-                        Quiero unirme
-                    </a>
+                    <p>Actividades educativas, servicio y vida al aire libre adaptadas a esta etapa.</p>
                 </div>
             </div>
         </section>
     @endforeach
-    @include('partials.banner')
 @endsection

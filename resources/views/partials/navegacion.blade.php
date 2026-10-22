@@ -9,18 +9,13 @@
             <x-icono nombre="menu" />
         </button>
         <nav class="nav-links" id="public-menu" aria-label="Navegación principal">
-            @foreach (['inicio' => 'Inicio', 'ramas' => 'Ramas educativas', 'noticias.index' => 'Noticias y eventos',
+            @foreach (['inicio' => 'Inicio', 'ramas' => 'Ramas educativas', 'noticias.index' => 'Historias y noticias',
                 'nosotros' => 'Nosotros'] as $rutaMenu => $textoMenu)
                 <a href="{{ route($rutaMenu) }}" @class(['active' => request()->routeIs($rutaMenu)])>
                     {{ $textoMenu }}
                 </a>
             @endforeach
-            <a href="{{ route('contacto') }}#contacto">
-                Contacto
-            </a>
-            <a class="btn small" href="{{ route('nosotros', ['asunto' => 'Inscripción']) }}#contacto">
-                Únete
-            </a>
+            <x-tema />
             @auth
                 <a href="{{ route('panel') }}">
                     Mi panel

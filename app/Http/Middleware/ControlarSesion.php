@@ -15,7 +15,7 @@ class ControlarSesion
         if ($usuario = $request->user()) {
             $vencida = time() - $request->session()->get('ultima_actividad', time()) >= 1800;
             $version = $request->session()->get('version_acceso', $usuario->version_acceso);
-            if (! $usuario->activo || $vencida || $version !== $usuario->version_acceso) {
+            if (! $usuario->estaActivo() || $vencida || $version !== $usuario->version_acceso) {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();

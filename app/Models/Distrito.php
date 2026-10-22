@@ -12,12 +12,6 @@ class Distrito extends Model
 {
     protected $table = 'distritos';
 
-    public const CREATED_AT = null;
-
-    public const UPDATED_AT = null;
-
-    public $timestamps = false;
-
     protected $fillable = [
         'nombre',
         'departamento',
@@ -30,13 +24,8 @@ class Distrito extends Model
         ];
     }
 
-    public function gruposScoutPorDistritoId(): HasMany
+    public function grupos(): HasMany
     {
         return $this->hasMany(GrupoScout::class, 'distrito_id');
-    }
-
-    public function usuariosPorDistritoId(): HasMany
-    {
-        return $this->hasMany(User::class, 'distrito_id');
     }
 }

@@ -4,8 +4,7 @@
     if ($valorCampo instanceof \DateTimeInterface) {
         $valorCampo = $valorCampo->format($tipo === 'datetime-local' ? 'Y-m-d\TH:i' : 'Y-m-d');
     }
-    $esLista = in_array($tipo, ['ramas', 'categorias', 'grupos', 'roles', 'miembros', 'unidades',
-        'departamentos', 'publicacion', 'mensaje', 'destinos', 'select']);
+    $esLista = in_array($tipo, ['ramas', 'categorias', 'publicacion', 'mensaje', 'select']);
 @endphp
 <div class="field">
     <label for="campo-{{ $nombre }}">

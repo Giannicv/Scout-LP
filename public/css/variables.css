@@ -1,24 +1,79 @@
-/* ===== variables ===== */
+/* Identidad y colores semánticos compartidos por toda la aplicación. */
 :root
 {
-    --morado-900:#2E1A47;
-    --morado-800:#3F2463;
-    --morado-700:#52307F;
-    --morado-600:#6A44A0;
-    --morado-500:#8460BC;
-    --morado-100:#EDE7F6;
-    --caqui-700:#8C7B54;
-    --caqui-500:#C3B091;
-    --caqui-300:#DCCFB4;
-    --caqui-100:#F3EDE0;
-    --fondo:#FAF8F3;
-    --blanco:#FFF;
-    --texto:#1F1A2B;
-    --texto-suave:#6B6478;
-    --borde:#E6E0D2;
-    --exito:#52307F;
-    --error:#B3423F;
-    --aviso:#C58B2A;
+    color-scheme:light;
+    --morado-900:#2e1a47;
+    --morado-800:#3f2463;
+    --morado-700:#52307f;
+    --morado-600:#6a44a0;
+    --morado-500:#8460bc;
+    --morado-100:#ede7f6;
+    --caqui-700:#786842;
+    --caqui-500:#b7a27e;
+    --caqui-300:#dccfb4;
+    --caqui-100:#f3ede0;
+    --fondo:#faf8f3;
+    --superficie:#ffffff;
+    --superficie-elevada:#ffffff;
+    --superficie-suave:#f3ede0;
+    --superficie-translucida:#ffffffee;
+    --texto:#211a2b;
+    --texto-suave:#665e70;
+    --borde:#ded6c7;
+    --primario:#52307f;
+    --primario-hover:#3f2463;
+    --primario-suave:#ede7f6;
+    --sobre-primario:#ffffff;
+    --enlace:#52307f;
+    --enlace-hover:#3f2463;
+    --exito:#24623a;
+    --exito-fondo:#e3f4e8;
+    --aviso:#765510;
+    --aviso-fondo:#fff1ce;
+    --error:#a93633;
+    --error-fondo:#f7e8e7;
+    --fila-hover:#f7f3ea;
+    --velo:#21133299;
     --radio:22px;
-    --sombra:0 12px 40px #2e1a4708
+    --sombra:0 14px 42px #2e1a4712;
+    --sombra-fuerte:0 18px 54px #2e1a4720;
+}
+
+:root[data-tema="oscuro"]
+{
+    color-scheme:dark;
+    --morado-900:#17101f;
+    --morado-800:#d9c5f4;
+    --morado-700:#c5a4ed;
+    --morado-600:#b58ce6;
+    --morado-500:#a77bdc;
+    --morado-100:#352843;
+    --caqui-700:#e5d5b2;
+    --caqui-500:#c9b488;
+    --caqui-300:#d9c7a2;
+    --caqui-100:#2d2830;
+    --fondo:#151119;
+    --superficie:#211a28;
+    --superficie-elevada:#292031;
+    --superficie-suave:#2d2830;
+    --superficie-translucida:#211a28ee;
+    --texto:#f5f0f8;
+    --texto-suave:#bfb4c6;
+    --borde:#44374d;
+    --primario:#7550a5;
+    --primario-hover:#8b63ba;
+    --primario-suave:#352843;
+    --sobre-primario:#ffffff;
+    --enlace:#c5a4ed;
+    --enlace-hover:#ddc8f6;
+    --exito:#9bd5aa;
+    --exito-fondo:#1f3a29;
+    --aviso:#f0ce80;
+    --aviso-fondo:#40351e;
+    --error:#ffb4b0;
+    --error-fondo:#482725;
+    --fila-hover:#2a2231;
+    --velo:#09070bcc;
+    --sombra:0 16px 44px #00000033;
+    --sombra-fuerte:0 20px 60px #00000055;
 }

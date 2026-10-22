@@ -1,5 +1,5 @@
 @extends('layouts.publico')
-@section('titulo', 'Noticias | Scouts de Bolivia')
+@section('titulo', 'Historias y noticias | Scouts de Bolivia')
 @section('contenido')
     <section class="page-hero container">
         <p class="eyebrow">
@@ -11,14 +11,14 @@
             Lo que viene.
         </h1>
         <p class="lead">
-            Noticias, campañas y encuentros del movimiento.
+            Historias, novedades y proyectos que reflejan la vida del movimiento.
         </p>
     </section>
-    <section class="container" data-noticias-url="{{ route('noticias.index') }}">
+    <section class="container news-catalog" data-noticias-url="{{ route('noticias.index') }}">
         <div class="filters" aria-label="Filtrar noticias">
-            @foreach (['Todo', 'Noticias', 'Campamentos', 'Proyectos', 'Eventos'] as $categoria)
+            @foreach ($categorias->prepend('Todo') as $categoria)
                 <a
-                    class="btn secondary"
+                    @class(['btn', 'secondary', 'active' => request('categoria', '') === ($categoria === 'Todo' ? '' : $categoria)])
                     data-categoria="{{ $categoria === 'Todo' ? '' : $categoria }}"
                     href="{{ route('noticias.index', ['categoria' => $categoria === 'Todo' ? '' : $categoria]) }}">
                     {{ $categoria }}
@@ -35,62 +35,6 @@
                 href="{{ route('noticias.index', ['categoria' => request('categoria'), 'limite' => $limite + 6]) }}">
                 Cargar más
             </a>
-        </div>
-    </section>
-    <section class="section alternate">
-        <div class="container">
-            <p class="eyebrow">
-                AGENDA SCOUT
-            </p>
-            <h2>
-                Nos encontramos pronto.
-            </h2>
-            @forelse ($eventos as $evento)
-                <article class="event-row">
-                    <time class="event-date">
-                        <strong>
-                            {{ $evento->fecha_inicio->format('d') }}
-                        </strong>
-                        <span>
-                            {{ $evento->fecha_inicio->translatedFormat('M') }}
-                        </span>
-                    </time>
-                    <div class="event-info">
-                        <h3>
-                            {{ $evento->titulo }}
-                        </h3>
-                        <p>
-                            {{ $evento->lugar }}
-                            ·
-                            {{ $evento->fecha_inicio->format('H:i') }}
-                        </p>
-                    </div>
-                    <button class="btn secondary small" data-abrir-dialogo="evento-{{ $evento->id }}">
-                        Ver encuentro ↗
-                    </button>
-                </article>
-                <dialog id="evento-{{ $evento->id }}">
-                    <h2>
-                        {{ $evento->titulo }}
-                    </h2>
-                    <p>
-                        {{ $evento->descripcion }}
-                    </p>
-                    <p>
-                        {{ $evento->lugar }}
-                    </p>
-                    <a class="btn" href="{{ route('contacto') }}#contacto">
-                        Consultar participación
-                    </a>
-                    <button class="btn secondary" data-cerrar-dialogo>
-                        Cerrar
-                    </button>
-                </dialog>
-            @empty
-                <p class="empty">
-                    Pronto compartiremos nuevos encuentros.
-                </p>
-            @endforelse
         </div>
     </section>
 @endsection

@@ -12,10 +12,6 @@ class MensajeContacto extends Model
 {
     protected $table = 'mensajes_contacto';
 
-    public const CREATED_AT = 'creado_en';
-
-    public const UPDATED_AT = null;
-
     protected $fillable = [
         'nombre',
         'email',
@@ -23,21 +19,26 @@ class MensajeContacto extends Model
         'asunto',
         'mensaje',
         'estado',
-        'creado_en',
         'rama_id',
+        'grupo_id',
     ];
 
     protected function casts(): array
     {
         return [
             'id' => 'integer',
-            'creado_en' => 'datetime',
             'rama_id' => 'integer',
+            'grupo_id' => 'integer',
         ];
     }
 
     public function rama(): BelongsTo
     {
         return $this->belongsTo(Rama::class, 'rama_id');
+    }
+
+    public function grupo(): BelongsTo
+    {
+        return $this->belongsTo(GrupoScout::class, 'grupo_id');
     }
 }

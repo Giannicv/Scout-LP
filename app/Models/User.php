@@ -2,40 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-/**
- * Representa los registros de usuarios y sus relaciones originales.
- */
 class User extends Authenticatable
 {
+    use HasFactory, Notifiable;
+
     protected $table = 'usuarios';
 
-    public const CREATED_AT = 'creado_en';
+    protected $fillable = ['rol_id', 'grupo_id', 'miembro_id', 'nombre', 'apellido', 'email',
+        'password_hash', 'estado', 'ultimo_acceso', 'version_acceso', 'revisado_por',
+        'revisado_en', 'motivo_rechazo'];
 
-    public const UPDATED_AT = null;
-
-    protected $fillable = [
-        'rol_id',
-        'nombre',
-        'apellido',
-        'email',
-        'password_hash',
-        'activo',
-        'ultimo_acceso',
-        'creado_en',
-        'telefono',
-        'avatar_url',
-        'departamento',
-        'distrito_id',
-        'tutor_id',
-        'miembro_id',
-        'version_acceso',
-    ];
-
-    protected $hidden = ['password_hash'];
+    protected $hidden = ['password_hash', 'remember_token'];
 
     public function getAuthPasswordName(): string
     {
@@ -47,35 +30,9 @@ class User extends Authenticatable
         return $this->password_hash;
     }
 
-    public function getRememberTokenName(): string
-    {
-        return '';
-    }
-
     protected function casts(): array
     {
-        return [
-            'id' => 'integer',
-            'rol_id' => 'integer',
-            'password_hash' => 'hashed',
-            'activo' => 'boolean',
-            'ultimo_acceso' => 'datetime',
-            'creado_en' => 'datetime',
-            'distrito_id' => 'integer',
-            'tutor_id' => 'integer',
-            'miembro_id' => 'integer',
-            'version_acceso' => 'integer',
-        ];
-    }
-
-    public function distrito(): BelongsTo
-    {
-        return $this->belongsTo(Distrito::class, 'distrito_id');
-    }
-
-    public function miembro(): BelongsTo
-    {
-        return $this->belongsTo(Miembro::class, 'miembro_id');
+        return ['password_hash' => 'hashed', 'ultimo_acceso' => 'datetime', 'revisado_en' => 'datetime'];
     }
 
     public function rol(): BelongsTo
@@ -83,73 +40,33 @@ class User extends Authenticatable
         return $this->belongsTo(Rol::class, 'rol_id');
     }
 
-    public function tutor(): BelongsTo
+    public function grupo(): BelongsTo
     {
-        return $this->belongsTo(Tutor::class, 'tutor_id');
+        return $this->belongsTo(GrupoScout::class, 'grupo_id');
     }
 
-    public function auditoriaPorActorId(): HasMany
+    public function miembro(): BelongsTo
     {
-        return $this->hasMany(Auditoria::class, 'actor_id');
+        return $this->belongsTo(Miembro::class, 'miembro_id');
     }
 
-    public function comunicadoLecturasPorUsuarioId(): HasMany
+    public function revisor(): BelongsTo
     {
-        return $this->hasMany(ComunicadoLectura::class, 'usuario_id');
+        return $this->belongsTo(self::class, 'revisado_por');
     }
 
-    public function comunicadosPorAutorId(): HasMany
+    public function eventos(): HasMany
     {
-        return $this->hasMany(Comunicado::class, 'autor_id');
+        return $this->hasMany(Evento::class, 'creado_por');
     }
 
-    public function contenidoInstitucionalPorActualizadoPor(): HasMany
+    public function es(string $rol): bool
     {
-        return $this->hasMany(ContenidoInstitucional::class, 'actualizado_por');
+        return $this->rol?->nombre === $rol;
     }
 
-    public function eventosPorAutorId(): HasMany
+    public function estaActivo(): bool
     {
-        return $this->hasMany(Evento::class, 'autor_id');
-    }
-
-    public function inscripcionesPorRevisadoPor(): HasMany
-    {
-        return $this->hasMany(Inscripcion::class, 'revisado_por');
-    }
-
-    public function intentosLoginPorUsuarioId(): HasMany
-    {
-        return $this->hasMany(IntentoAnterior::class, 'usuario_id');
-    }
-
-    public function miembroInsigniasPorRegistradoPor(): HasMany
-    {
-        return $this->hasMany(MiembroInsignia::class, 'registrado_por');
-    }
-
-    public function miembroRequisitosPorRegistradoPor(): HasMany
-    {
-        return $this->hasMany(MiembroRequisito::class, 'registrado_por');
-    }
-
-    public function noticiasPorAutorId(): HasMany
-    {
-        return $this->hasMany(Noticia::class, 'autor_id');
-    }
-
-    public function sesionesLoginPorUsuarioId(): HasMany
-    {
-        return $this->hasMany(SesionAnterior::class, 'usuario_id');
-    }
-
-    public function tokensRecuperacionPorUsuarioId(): HasMany
-    {
-        return $this->hasMany(TokenRecuperacion::class, 'usuario_id');
-    }
-
-    public function unidadesPorDirigenteId(): HasMany
-    {
-        return $this->hasMany(Unidad::class, 'dirigente_id');
+        return $this->estado === 'activo';
     }
 }
