@@ -127,6 +127,94 @@ class FlujosWebScoutTest extends TestCase
         $this->actingAs($usuario)->post(route('eventos.inscribir', $lleno))->assertSessionHasErrors('evento');
     }
 
+    public function test_evento_sin_ventana_explicita_acepta_inscripciones_hasta_su_inicio(): void
+    {
+        $rama = Rama::first();
+        $usuario = $this->usuarioMiembro($rama);
+        $evento = $this->eventoPublicado([$rama->id], ['inscripcion_desde' => null, 'inscripcion_hasta' => null]);
+
+        $this->actingAs($usuario)->get(route('eventos.show', $evento))
+            ->assertOk()
+            ->assertSee('Inscripción abierta')
+            ->assertSee('Confirmar inscripción');
+        $this->actingAs($usuario)->post(route('eventos.inscribir', $evento))->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('inscripciones_evento', ['evento_id' => $evento->id,
+            'miembro_id' => $usuario->miembro_id, 'estado' => 'inscrito']);
+    }
+
+    public function test_un_evento_publicado_explica_por_que_no_admite_inscripcion(): void
+    {
+        $rama = Rama::first();
+        $usuario = $this->usuarioMiembro($rama);
+        $evento = $this->eventoPublicado([$rama->id], ['inscripcion_desde' => now()->addDay(),
+            'inscripcion_hasta' => now()->addDays(2)]);
+
+        $this->actingAs($usuario)->get(route('eventos.show', $evento))
+            ->assertOk()
+            ->assertSee('Las inscripciones abren el')
+            ->assertDontSee('Confirmar inscripción');
+    }
+
+    public function test_no_se_puede_inscribir_despues_de_iniciado_el_evento(): void
+    {
+        $rama = Rama::first();
+        $usuario = $this->usuarioMiembro($rama);
+        $evento = $this->eventoPublicado([$rama->id], ['fecha_inicio' => now()->subHour(),
+            'fecha_fin' => now()->addHours(2), 'inscripcion_hasta' => null]);
+
+        $this->actingAs($usuario)->post(route('eventos.inscribir', $evento))
+            ->assertSessionHasErrors('evento');
+        $this->assertDatabaseMissing('inscripciones_evento', ['evento_id' => $evento->id,
+            'miembro_id' => $usuario->miembro_id]);
+    }
+
+    public function test_no_se_puede_crear_un_evento_con_inicio_pasado(): void
+    {
+        $distrital = $this->usuario('dirigente_distrital');
+        $this->actingAs($distrital)->post(route('eventos.store'), $this->datosEvento([
+            'fecha_inicio' => now()->subHours(2)->format('Y-m-d H:i:s'),
+            'fecha_fin' => now()->subHour()->format('Y-m-d H:i:s'),
+        ]))->assertSessionHasErrors('fecha_inicio');
+    }
+
+    public function test_evento_admite_imagen_y_valida_el_cierre_de_inscripciones(): void
+    {
+        Storage::fake('public');
+        $distrital = $this->usuario('dirigente_distrital');
+        $inicio = now()->addDays(3);
+        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=');
+        $datos = $this->datosEvento(['fecha_inicio' => $inicio->format('Y-m-d H:i:s'),
+            'fecha_fin' => $inicio->copy()->addHours(2)->format('Y-m-d H:i:s'),
+            'inscripcion_hasta' => $inicio->copy()->addHour()->format('Y-m-d H:i:s'),
+            'imagen' => UploadedFile::fake()->createWithContent('campamento.png', $png)]);
+
+        $this->actingAs($distrital)->post(route('eventos.store'), $datos)
+            ->assertSessionHasErrors('inscripcion_hasta');
+
+        $datos['inscripcion_hasta'] = $inicio->copy()->subHour()->format('Y-m-d H:i:s');
+        $datos['imagen'] = UploadedFile::fake()->createWithContent('campamento.png', $png);
+        $this->actingAs($distrital)->post(route('eventos.store'), $datos)->assertSessionHasNoErrors();
+        $evento = Evento::latest('id')->firstOrFail();
+        $this->assertStringStartsWith('storage/eventos/', $evento->imagen_url);
+        Storage::disk('public')->assertExists(Str::after($evento->imagen_url, 'storage/'));
+    }
+
+    public function test_el_distrital_ve_detalles_e_inscritos_del_evento(): void
+    {
+        $rama = Rama::first();
+        $miembro = $this->usuarioMiembro($rama);
+        $evento = $this->eventoPublicado([$rama->id], ['que_llevar' => 'Agua, gorra y pañoleta.',
+            'indicaciones' => 'Presentarse quince minutos antes.']);
+        $this->actingAs($miembro)->post(route('eventos.inscribir', $evento));
+
+        $distrital = User::where('email', 'distrito@scoutlapaz.bo')->firstOrFail();
+        $this->actingAs($distrital)->get(route('eventos.show', $evento))
+            ->assertOk()
+            ->assertSee('Miembros inscritos')
+            ->assertSee('Agua, gorra y pañoleta.')
+            ->assertSee($miembro->miembro->nombre);
+    }
+
     public function test_solo_un_rover_propone_proyectos_rover(): void
     {
         $rover = $this->usuarioMiembro(Rama::where('slug', 'rovers')->first());
@@ -157,8 +245,14 @@ class FlujosWebScoutTest extends TestCase
         $this->get(route('inicio'))->assertOk()
             ->assertSee('js/tema.js')
             ->assertSee('img/scout-salar.jpg', false)
+            ->assertSee('img/Lobatos.png', false)
+            ->assertSee('img/Exploradores.png', false)
+            ->assertSee('img/Pioneros.png', false)
+            ->assertSee('img/Rovers.png', false)
             ->assertSee('data-tema-toggle', false);
         $this->get(route('ramas'))->assertOk();
+        $this->get(route('nosotros'))->assertOk()
+            ->assertSee('img/scout antiguo bol.jpeg', false);
         $this->get(route('salud'))->assertOk()->assertJson(['ok' => true]);
     }
 

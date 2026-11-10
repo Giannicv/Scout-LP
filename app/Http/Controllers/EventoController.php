@@ -12,6 +12,8 @@ use App\Notifications\EventoResuelto;
 use App\Services\AuditoriaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class EventoController extends Controller
@@ -21,8 +23,9 @@ class EventoController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', Evento::class);
-        $usuario = $request->user()->load('rol', 'miembro');
-        $consulta = Evento::with(['ramas', 'creador', 'inscripciones']);
+        $usuario = $request->user()->load('rol', 'miembro.rama');
+        $consulta = Evento::with(['ramas', 'creador', 'inscripciones'])
+            ->withCount(['inscripciones as inscritos_count' => fn ($q) => $q->where('estado', 'inscrito')]);
         if ($usuario->es('miembro')) {
             $consulta->where(function ($q) use ($usuario) {
                 $q->where(fn ($p) => $p->where('estado', 'publicado')->whereHas('ramas', fn ($r) => $r->whereKey($usuario->miembro->rama_id)))
@@ -40,7 +43,13 @@ class EventoController extends Controller
         if ($request->filled('estado')) {
             $consulta->where('estado', $request->estado);
         }
-        $eventos = $consulta->orderBy('fecha_inicio')->paginate(12)->withQueryString();
+        if ($request->vigencia === 'proximos') {
+            $consulta->where('fecha_fin', '>=', now());
+        } elseif ($request->vigencia === 'finalizados') {
+            $consulta->where('fecha_fin', '<', now());
+        }
+        $eventos = $consulta->orderByRaw('CASE WHEN fecha_fin >= CURRENT_TIMESTAMP THEN 0 ELSE 1 END')
+            ->orderBy('fecha_inicio')->paginate(12)->withQueryString();
 
         return view('panel.eventos', compact('eventos', 'usuario'));
     }
@@ -48,8 +57,29 @@ class EventoController extends Controller
     public function create(Request $request)
     {
         $this->authorize('create', Evento::class);
+        $inicio = now()->addWeek()->startOfHour();
+        $evento = new Evento(['fecha_inicio' => $inicio, 'fecha_fin' => $inicio->copy()->addHours(4),
+            'inscripcion_desde' => now()->startOfHour(), 'inscripcion_hasta' => $inicio->copy()->subDay(),
+            'estado' => EstadoEvento::BORRADOR->value, 'inscripcion_habilitada' => true]);
 
-        return view('panel.evento-form', ['evento' => new Evento, 'ramas' => Rama::orderBy('orden')->get()]);
+        return view('panel.evento-form', ['evento' => $evento, 'ramas' => Rama::orderBy('orden')->get()]);
+    }
+
+    public function show(Request $request, Evento $evento)
+    {
+        $this->authorize('view', $evento);
+        $usuario = $request->user()->load('rol', 'miembro.rama');
+        $evento->load(['ramas', 'creador.grupo', 'publicador', 'proponente.grupo',
+            'inscripciones.miembro.rama', 'inscripciones.miembro.grupo']);
+        $evento->loadCount(['inscripciones as inscritos_count' => fn ($q) => $q->where('estado', 'inscrito')]);
+        $inscripcion = $usuario->es('miembro')
+            ? $evento->inscripciones->firstWhere('miembro_id', $usuario->miembro_id) : null;
+        $motivoNoInscripcion = $usuario->es('miembro') && $inscripcion?->estado !== 'inscrito'
+            ? $evento->motivoNoInscripcion($usuario->miembro) : null;
+        $puedeGestionar = $usuario->es('dirigente_distrital') || $evento->creado_por === $usuario->id;
+
+        return view('panel.evento-detalle', compact('evento', 'usuario', 'inscripcion',
+            'motivoNoInscripcion', 'puedeGestionar'));
     }
 
     public function store(EventoRequest $request)
@@ -60,7 +90,7 @@ class EventoController extends Controller
             abort_unless($usuario->miembro?->rama?->slug === 'rovers' && $request->tipo === TipoEvento::PROYECTO_ROVER->value, 403);
         }
         $evento = DB::transaction(function () use ($request, $usuario) {
-            $datos = $request->safe()->except('ramas');
+            $datos = $request->safe()->except(['ramas', 'imagen']);
             $datos['creado_por'] = $usuario->id;
             $datos['requiere_autorizacion'] = $request->boolean('requiere_autorizacion');
             $datos['inscripcion_habilitada'] = $request->boolean('inscripcion_habilitada');
@@ -70,6 +100,9 @@ class EventoController extends Controller
                 $datos['propuesto_por_miembro_id'] = $usuario->miembro_id;
             } elseif ($datos['estado'] === EstadoEvento::PUBLICADO->value) {
                 $datos['publicado_por'] = $usuario->id;
+            }
+            if ($imagen = $this->guardarImagen($request)) {
+                $datos['imagen_url'] = $imagen;
             }
             $evento = Evento::create($datos);
             $evento->ramas()->sync($usuario->es('miembro') ? [$usuario->miembro->rama_id] : $request->ramas);
@@ -91,10 +124,15 @@ class EventoController extends Controller
     public function update(EventoRequest $request, Evento $evento)
     {
         $this->authorize('update', $evento);
-        DB::transaction(function () use ($request, $evento) {
-            $datos = $request->safe()->except('ramas');
+        $imagenAnterior = $evento->imagen_url;
+        $imagenNueva = $this->guardarImagen($request);
+        DB::transaction(function () use ($request, $evento, $imagenNueva) {
+            $datos = $request->safe()->except(['ramas', 'imagen']);
             $datos['requiere_autorizacion'] = $request->boolean('requiere_autorizacion');
             $datos['inscripcion_habilitada'] = $request->boolean('inscripcion_habilitada');
+            if ($imagenNueva) {
+                $datos['imagen_url'] = $imagenNueva;
+            }
             if (($datos['estado'] ?? null) === EstadoEvento::PUBLICADO->value) {
                 $datos['publicado_por'] = $request->user()->id;
             }
@@ -102,8 +140,11 @@ class EventoController extends Controller
             $evento->ramas()->sync($request->ramas);
             $this->auditoria->registrar($request, 'actualizar', 'evento', $evento->id, ['estado' => $evento->estado]);
         });
+        if ($imagenNueva && str_starts_with((string) $imagenAnterior, 'storage/')) {
+            Storage::disk('public')->delete(Str::after($imagenAnterior, 'storage/'));
+        }
 
-        return redirect()->route('eventos.index')->with('estado', 'Evento actualizado.');
+        return redirect()->route('eventos.show', $evento)->with('estado', 'Evento actualizado.');
     }
 
     public function aprobar(Request $request, Evento $evento)
@@ -112,6 +153,9 @@ class EventoController extends Controller
         DB::transaction(function () use ($request, $evento) {
             $bloqueado = Evento::whereKey($evento->id)->lockForUpdate()->firstOrFail();
             abort_unless($bloqueado->estado === EstadoEvento::PROPUESTO->value, 422);
+            if ($bloqueado->fecha_inicio->lte(now())) {
+                throw ValidationException::withMessages(['evento' => 'No se puede publicar una propuesta cuyo inicio ya pasó.']);
+            }
             $bloqueado->update(['estado' => EstadoEvento::PUBLICADO->value,
                 'publicado_por' => $request->user()->id, 'motivo_rechazo' => null]);
             $this->auditoria->registrar($request, 'aprobar', 'evento', $bloqueado->id);
@@ -143,8 +187,8 @@ class EventoController extends Controller
         abort_unless($usuario->es('miembro') && $usuario->miembro, 403);
         DB::transaction(function () use ($request, $evento, $usuario) {
             $evento = Evento::whereKey($evento->id)->lockForUpdate()->firstOrFail();
-            if (! $evento->aceptaInscripcionDe($usuario->miembro)) {
-                throw ValidationException::withMessages(['evento' => 'El evento no acepta esta inscripción.']);
+            if ($motivo = $evento->motivoNoInscripcion($usuario->miembro)) {
+                throw ValidationException::withMessages(['evento' => $motivo]);
             }
             InscripcionEvento::updateOrCreate(['evento_id' => $evento->id, 'miembro_id' => $usuario->miembro_id],
                 ['estado' => 'inscrito', 'inscrito_en' => now(), 'cancelado_en' => null]);
@@ -157,6 +201,9 @@ class EventoController extends Controller
     public function cancelar(Request $request, Evento $evento)
     {
         $this->authorize('register', $evento);
+        if ($evento->fecha_inicio->lte(now())) {
+            throw ValidationException::withMessages(['evento' => 'No puedes cancelar una inscripción después de iniciado el evento.']);
+        }
         $inscripcion = InscripcionEvento::where('evento_id', $evento->id)
             ->where('miembro_id', $request->user()->miembro_id)->firstOrFail();
         $inscripcion->update(['estado' => 'cancelado', 'cancelado_en' => now()]);
@@ -173,5 +220,14 @@ class EventoController extends Controller
         $this->auditoria->registrar($request, 'cancelar', 'evento', $evento->id);
 
         return back()->with('estado', 'Evento cancelado y cerrado a nuevas inscripciones.');
+    }
+
+    private function guardarImagen(EventoRequest $request): ?string
+    {
+        if (! $request->hasFile('imagen')) {
+            return null;
+        }
+
+        return 'storage/'.$request->file('imagen')->store('eventos', 'public');
     }
 }

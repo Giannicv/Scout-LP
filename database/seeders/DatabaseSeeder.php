@@ -33,15 +33,15 @@ class DatabaseSeeder extends Seeder
 
             $ramas = [];
             foreach ([
-                ['Lobatos', 'lobatos', 7, 10, '#F5C518', 'Siempre mejor'],
-                ['Exploradores', 'exploradores', 11, 14, '#2E7D32', 'Siempre listos'],
-                ['Pioneros', 'pioneros', 15, 17, '#1565C0', 'Servir'],
-                ['Rovers', 'rovers', 18, 21, '#C62828', 'Servir'],
-            ] as $orden => [$nombre, $slug, $min, $max, $color, $lema]) {
+                ['Lobatos', 'lobatos', 7, 10, '#F5C518', 'Siempre mejor', 'img/Lobatos.png'],
+                ['Exploradores', 'exploradores', 11, 14, '#2E7D32', 'Siempre listos', 'img/Exploradores.png'],
+                ['Pioneros', 'pioneros', 15, 17, '#1565C0', 'Servir', 'img/Pioneros.png'],
+                ['Rovers', 'rovers', 18, 21, '#C62828', 'Servir', 'img/Rovers.png'],
+            ] as $orden => [$nombre, $slug, $min, $max, $color, $lema, $imagen]) {
                 $ramas[$slug] = DB::table('ramas')->insertGetId(['nombre' => $nombre, 'slug' => $slug,
                     'edad_minima' => $min, 'edad_maxima' => $max,
                     'descripcion' => 'Programa educativo Scout para jóvenes de '.$min.' a '.$max.' años.',
-                    'lema' => $lema, 'color_hex' => $color, 'orden' => $orden + 1]);
+                    'lema' => $lema, 'color_hex' => $color, 'imagen_url' => $imagen, 'orden' => $orden + 1]);
             }
 
             $password = Hash::make('Scout2026!');

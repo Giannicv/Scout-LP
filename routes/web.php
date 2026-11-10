@@ -34,7 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/salir', [AccesoController::class, 'salir'])->name('salir');
     Route::post('/password', [AccesoController::class, 'cambiarPassword'])->name('password.cambiar');
     Route::get('/panel', [PanelController::class, 'dashboard'])->name('panel');
-    Route::resource('/panel/eventos', EventoController::class)->except(['show', 'destroy']);
+    Route::resource('/panel/eventos', EventoController::class)->except('destroy');
     Route::post('/panel/eventos/{evento}/aprobar', [EventoController::class, 'aprobar'])->name('eventos.aprobar');
     Route::post('/panel/eventos/{evento}/rechazar', [EventoController::class, 'rechazar'])->name('eventos.rechazar');
     Route::post('/panel/eventos/{evento}/cancelar', [EventoController::class, 'cancelarEvento'])->name('eventos.cancelar-evento');

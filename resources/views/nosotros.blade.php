@@ -15,8 +15,10 @@
         </p>
     </section>
     <div class="container">
-        <x-imagen ruta="img/nosotros.jpg" descripcion="Amistad y servicio entre scouts de Bolivia"
-    clase="hero-media" />
+        <x-imagen
+            ruta="img/scout antiguo bol.jpeg"
+            descripcion="Formación histórica de scouts bolivianos portando banderas"
+            clase="hero-media" />
     </div>
     <section class="section">
         <div class="container">

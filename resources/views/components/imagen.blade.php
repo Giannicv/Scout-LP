@@ -1,8 +1,8 @@
 @props(['ruta' => '', 'descripcion' => '', 'clase' => '', 'prioritaria' => false])
 <div class="media {{ $clase }}">
-    @if ($ruta && preg_match('~^(https?://|img/)~i', $ruta))
+    @if ($ruta && preg_match('~^(https?://|img/|storage/)~i', $ruta))
         @php
-            $esImagenLocal = str_starts_with($ruta, 'img/');
+            $esImagenLocal = str_starts_with($ruta, 'img/') || str_starts_with($ruta, 'storage/');
             $version = $esImagenLocal && is_file(public_path($ruta)) ? filemtime(public_path($ruta)) : null;
             $origen = $esImagenLocal ? asset($ruta).($version ? '?v='.$version : '') : $ruta;
         @endphp
