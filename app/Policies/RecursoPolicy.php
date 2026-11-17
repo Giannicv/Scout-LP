@@ -15,7 +15,21 @@ class RecursoPolicy
 
     public function create(User $user): bool
     {
-        return $user->es(RolNombre::DISTRITAL->value);
+        return $user->estaActivo() && ($user->es(RolNombre::DISTRITAL->value)
+            || $user->es(RolNombre::GRUPO->value));
+    }
+
+    public function view(User $user, Recurso $recurso): bool
+    {
+        return $user->estaActivo() && ($recurso->estado === 'publicado'
+            || $user->es(RolNombre::DISTRITAL->value)
+            || ($user->es(RolNombre::GRUPO->value) && $recurso->publicado_por === $user->id));
+    }
+
+    public function update(User $user, Recurso $recurso): bool
+    {
+        return $user->estaActivo() && ($user->es(RolNombre::DISTRITAL->value)
+            || ($user->es(RolNombre::GRUPO->value) && $recurso->publicado_por === $user->id));
     }
 
     public function download(User $user, Recurso $recurso): bool
@@ -25,6 +39,6 @@ class RecursoPolicy
 
     public function delete(User $user, Recurso $recurso): bool
     {
-        return $user->es(RolNombre::DISTRITAL->value);
+        return $this->update($user, $recurso);
     }
 }

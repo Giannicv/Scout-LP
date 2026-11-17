@@ -61,6 +61,9 @@ class Evento extends Model
     public function motivoNoInscripcion(Miembro $miembro): ?string
     {
         $ahora = now();
+        if (! $miembro->activo) {
+            return 'Tu membresía debe estar activa para inscribirte.';
+        }
         if ($this->estado !== 'publicado') {
             return 'El evento todavía no está publicado.';
         }

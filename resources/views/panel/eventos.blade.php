@@ -62,11 +62,23 @@
                         <span class="event-type">{{ ucfirst(str_replace('_', ' ', $evento->tipo)) }}</span>
                     </div>
                     <h2><a href="{{ route('eventos.show', $evento) }}">{{ $evento->titulo }}</a></h2>
-                    <div class="event-meta">
-                        <span>📅 {{ $evento->fecha_inicio->translatedFormat('d M Y · H:i') }}</span>
-                        <span>📍 {{ $evento->lugar }}</span>
-                        <span>👥 {{ $evento->cantidadInscritos() }}{{ $evento->cupo ? '/'.$evento->cupo : ' inscritos' }}</span>
-                        <span>💵 {{ (float) $evento->costo > 0 ? 'Bs '.number_format((float) $evento->costo, 2) : 'Sin costo' }}</span>
+                    <div class="event-meta" aria-label="Información principal del evento">
+                        <div class="event-meta-item">
+                            <span class="event-meta-icon"><x-icono nombre="calendar" /></span>
+                            <span><small>Inicio</small><strong>{{ $evento->fecha_inicio->translatedFormat('d M Y, H:i') }}</strong></span>
+                        </div>
+                        <div class="event-meta-item">
+                            <span class="event-meta-icon"><x-icono nombre="pin" /></span>
+                            <span><small>Lugar</small><strong>{{ $evento->lugar }}</strong></span>
+                        </div>
+                        <div class="event-meta-item">
+                            <span class="event-meta-icon"><x-icono nombre="users" /></span>
+                            <span><small>Cupos</small><strong>{{ $evento->cantidadInscritos() }}{{ $evento->cupo ? ' de '.$evento->cupo : ' inscritos' }}</strong></span>
+                        </div>
+                        <div class="event-meta-item">
+                            <span class="event-meta-icon"><x-icono nombre="money" /></span>
+                            <span><small>Costo</small><strong>{{ (float) $evento->costo > 0 ? 'Bs '.number_format((float) $evento->costo, 2) : 'Sin costo' }}</strong></span>
+                        </div>
                     </div>
                     <div class="event-branches">
                         @foreach ($evento->ramas as $rama)

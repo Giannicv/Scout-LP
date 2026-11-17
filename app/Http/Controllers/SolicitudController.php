@@ -7,6 +7,7 @@ use App\Notifications\SolicitudCuentaResuelta;
 use App\Services\AuditoriaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class SolicitudController extends Controller
 {
@@ -22,22 +23,39 @@ class SolicitudController extends Controller
         } else {
             $consulta->where('grupo_id', $usuario->grupo_id)->whereHas('rol', fn ($q) => $q->where('nombre', 'miembro'));
         }
+        $totalPendientes = (clone $consulta)->count();
+        $buscar = $request->query('buscar', '');
+        $buscar = is_string($buscar) ? trim(mb_substr($buscar, 0, 100)) : '';
+        if ($buscar !== '') {
+            $termino = '%'.mb_strtolower($buscar).'%';
+            $consulta->where(fn ($q) => $q->whereRaw('LOWER(nombre) LIKE ?', [$termino])
+                ->orWhereRaw('LOWER(apellido) LIKE ?', [$termino])
+                ->orWhereRaw("LOWER(nombre || ' ' || apellido) LIKE ?", [$termino])
+                ->orWhereRaw('LOWER(email) LIKE ?', [$termino]));
+        }
 
-        return view('panel.solicitudes', ['solicitudes' => $consulta->oldest()->paginate(15)]);
+        return view('panel.solicitudes', [
+            'solicitudes' => $consulta->oldest()->paginate(15)->withQueryString(),
+            'totalPendientes' => $totalPendientes,
+            'buscar' => $buscar,
+            'usuario' => $usuario,
+        ]);
     }
 
     public function resolver(Request $request, User $solicitud)
     {
-        $request->validate(['decision' => 'required|in:aprobar,rechazar',
+        $datos = $request->validate(['decision' => 'required|in:aprobar,rechazar',
             'motivo' => 'nullable|required_if:decision,rechazar|string|max:500']);
         $actor = $request->user()->load('rol');
         $this->authorize('resolve', $solicitud);
         $estado = $request->decision === 'aprobar' ? 'activo' : 'rechazado';
-        DB::transaction(function () use ($request, $actor, $solicitud, $estado) {
+        DB::transaction(function () use ($request, $actor, $solicitud, $estado, $datos) {
             $bloqueada = User::with('rol')->whereKey($solicitud->id)->lockForUpdate()->firstOrFail();
-            abort_unless($bloqueada->estado === 'pendiente', 422);
+            if ($bloqueada->estado !== 'pendiente') {
+                throw ValidationException::withMessages(['solicitud' => 'Esta solicitud ya fue revisada. Actualiza la lista.']);
+            }
             $bloqueada->update(['estado' => $estado, 'revisado_por' => $actor->id,
-                'revisado_en' => now(), 'motivo_rechazo' => $request->motivo]);
+                'revisado_en' => now(), 'motivo_rechazo' => $estado === 'rechazado' ? trim($datos['motivo']) : null]);
             if ($bloqueada->miembro_id) {
                 $bloqueada->miembro()->update(['activo' => $estado === 'activo']);
             }
@@ -45,6 +63,6 @@ class SolicitudController extends Controller
         });
         $solicitud->notify(new SolicitudCuentaResuelta($estado === 'activo' ? 'aprobada' : 'rechazada'));
 
-        return back()->with('estado', 'Solicitud '.$estado.'.');
+        return back()->with('estado', $estado === 'activo' ? 'Solicitud aprobada.' : 'Solicitud rechazada.');
     }
 }

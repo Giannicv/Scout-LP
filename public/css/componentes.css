@@ -492,6 +492,102 @@ dialog::backdrop
     padding:8px 14px
 }
 
+.confirm-dialog
+{
+    width:min(460px,calc(100% - 32px));
+    max-height:calc(100dvh - 32px);
+    margin:auto;
+    padding:0;
+    overflow:auto;
+    border:1px solid var(--borde);
+    border-radius:18px;
+    background:var(--superficie-elevada);
+    color:var(--texto);
+    box-shadow:var(--sombra-fuerte)
+}
+
+.confirm-dialog::backdrop
+{
+    background:var(--velo);
+    backdrop-filter:blur(4px)
+}
+
+.confirm-dialog-accent
+{
+    height:5px;
+    background:var(--caqui-500)
+}
+
+.confirm-dialog[data-variante="peligro"] .confirm-dialog-accent
+{
+    background:var(--error)
+}
+
+.confirm-dialog-content
+{
+    padding:29px 30px 30px
+}
+
+.confirm-dialog h2
+{
+    font-size:clamp(1.5rem,4vw,1.9rem);
+    margin:0 0 11px;
+    letter-spacing:-.035em
+}
+
+.confirm-dialog p
+{
+    margin:0;
+    max-width:45ch;
+    color:var(--texto-suave);
+    font-size:15px;
+    line-height:1.55
+}
+
+.confirm-dialog-actions
+{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:27px
+}
+
+.confirm-dialog-actions .btn
+{
+    min-height:45px;
+    padding:10px 15px
+}
+
+.confirm-dialog[data-variante="peligro"] [data-confirmacion-aceptar]
+{
+    border-color:var(--error);
+    background:var(--error-fondo);
+    color:var(--error)
+}
+
+.confirm-dialog[data-variante="peligro"] [data-confirmacion-aceptar]:hover
+{
+    background:var(--error-fondo)
+}
+
+body:has(.confirm-dialog[open])
+{
+    overflow:hidden
+}
+
+@media(max-width:420px)
+{
+    .confirm-dialog-content
+    {
+        padding:24px 20px
+    }
+
+    .confirm-dialog-actions
+    {
+        grid-template-columns:1fr
+    }
+}
+
 .toast
 {
     position:fixed;

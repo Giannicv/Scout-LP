@@ -7,7 +7,8 @@
             @can('update', $evento)
                 <a class="btn secondary" href="{{ route('eventos.edit', $evento) }}">Editar evento</a>
                 <form method="POST" action="{{ route('eventos.cancelar-evento', $evento) }}"
-                    data-confirmar="¿Cancelar este evento? Las inscripciones quedarán cerradas.">
+                    data-confirmar="Las inscripciones se cerrarán y los miembros verán el evento como cancelado."
+                    data-confirmar-variante="peligro">
                     @csrf
                     <button class="btn danger">Cancelar evento</button>
                 </form>
@@ -34,10 +35,10 @@
     </section>
 
     <div class="event-stats">
-        <article class="card"><span>Inicio</span><strong>{{ $evento->fecha_inicio->translatedFormat('d M Y') }}</strong><small>{{ $evento->fecha_inicio->format('H:i') }}</small></article>
-        <article class="card"><span>Participantes</span><strong>{{ $evento->cantidadInscritos() }}{{ $evento->cupo ? '/'.$evento->cupo : '' }}</strong><small>{{ $evento->cupo ? 'cupos ocupados' : 'sin límite de cupo' }}</small></article>
-        <article class="card"><span>Costo</span><strong>{{ (float) $evento->costo > 0 ? 'Bs '.number_format((float) $evento->costo, 2) : 'Gratuito' }}</strong><small>por participante</small></article>
-        <article class="card"><span>Inscripción</span><strong>{{ $operativo['etiqueta'] }}</strong><small>{{ $evento->cierreInscripcion()->translatedFormat('d M · H:i') }}</small></article>
+        <article class="card"><span class="event-stat-label"><x-icono nombre="calendar" /> Inicio</span><strong>{{ $evento->fecha_inicio->translatedFormat('d M Y') }}</strong><small>{{ $evento->fecha_inicio->format('H:i') }}</small></article>
+        <article class="card"><span class="event-stat-label"><x-icono nombre="users" /> Participantes</span><strong>{{ $evento->cantidadInscritos() }}{{ $evento->cupo ? '/'.$evento->cupo : '' }}</strong><small>{{ $evento->cupo ? 'cupos ocupados' : 'sin límite de cupo' }}</small></article>
+        <article class="card"><span class="event-stat-label"><x-icono nombre="money" /> Costo</span><strong>{{ (float) $evento->costo > 0 ? 'Bs '.number_format((float) $evento->costo, 2) : 'Gratuito' }}</strong><small>por participante</small></article>
+        <article class="card"><span class="event-stat-label"><x-icono nombre="clock" /> Inscripción</span><strong>{{ $operativo['etiqueta'] }}</strong><small>{{ $evento->cierreInscripcion()->translatedFormat('d M, H:i') }}</small></article>
     </div>
 
     <div class="event-detail-layout">
@@ -79,10 +80,15 @@
 
                 @if ($usuario->es('miembro'))
                     @if ($inscripcion?->estado === 'inscrito')
-                        <p class="registration-confirmed">✓ Tu inscripción está confirmada.</p>
-                        @if ($evento->fecha_inicio->isFuture())
+                        @if ($evento->estado === 'cancelado')
+                            <p class="event-reason">El evento fue cancelado. Tu inscripción queda solo como historial.</p>
+                        @else
+                            <p class="registration-confirmed"><x-icono nombre="check" /> Tu inscripción está confirmada.</p>
+                        @endif
+                        @if ($evento->estado === 'publicado' && $evento->fecha_inicio->isFuture())
                             <form method="POST" action="{{ route('eventos.cancelar', $evento) }}"
-                                data-confirmar="¿Cancelar tu inscripción?">
+                                data-confirmar="Tu plaza quedará libre para otro miembro."
+                                data-confirmar-variante="peligro">
                                 @csrf @method('DELETE')
                                 <button class="btn secondary full">Cancelar inscripción</button>
                             </form>
@@ -108,7 +114,7 @@
                 @if ($evento->motivo_rechazo)<p class="event-reason"><strong>Motivo:</strong> {{ $evento->motivo_rechazo }}</p>@endif
             </article>
 
-            @if ($evento->estado === 'propuesto' && ! $usuario->es('miembro'))
+            @can('review', $evento)
                 <article class="card event-section review-card">
                     <h3>Revisar propuesta</h3>
                     <form method="POST" action="{{ route('eventos.aprobar', $evento) }}">
@@ -121,7 +127,7 @@
                         <button class="btn secondary full">Rechazar propuesta</button>
                     </form>
                 </article>
-            @endif
+            @endcan
         </aside>
     </div>
 

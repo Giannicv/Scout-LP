@@ -8,11 +8,11 @@
         <title>
             @yield('titulo', 'Acceso | Scouts de Bolivia')
         </title>
-        <script src="{{ asset('js/tema.js') }}"></script>
+        <script src="{{ asset('js/tema.js').'?v='.filemtime(public_path('js/tema.js')) }}"></script>
         @foreach (['variables', 'base', 'componentes', 'admin', 'panel'] as $hojaEstilo)
-            <link rel="stylesheet" href="{{ asset('css/'.$hojaEstilo.'.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/'.$hojaEstilo.'.css').'?v='.filemtime(public_path('css/'.$hojaEstilo.'.css')) }}">
         @endforeach
-        <script src="{{ asset('js/interacciones.js') }}" defer>
+        <script src="{{ asset('js/interacciones.js').'?v='.filemtime(public_path('js/interacciones.js')) }}" defer>
         </script>
     </head>
     <body class="login-page">

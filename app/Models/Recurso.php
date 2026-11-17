@@ -9,7 +9,7 @@ class Recurso extends Model
 {
     protected $table = 'recursos';
 
-    protected $fillable = ['categoria_recurso_id', 'publicado_por', 'titulo', 'descripcion', 'archivo_path', 'nombre_original', 'mime_type', 'tamano_bytes', 'estado', 'publicado_en'];
+    protected $fillable = ['categoria_recurso_id', 'publicado_por', 'titulo', 'descripcion', 'imagen_path', 'archivo_path', 'nombre_original', 'mime_type', 'tamano_bytes', 'estado', 'publicado_en'];
 
     protected function casts(): array
     {
@@ -24,5 +24,16 @@ class Recurso extends Model
     public function publicador(): BelongsTo
     {
         return $this->belongsTo(User::class, 'publicado_por');
+    }
+
+    public function formato(): string
+    {
+        return strtoupper(pathinfo($this->nombre_original, PATHINFO_EXTENSION)) ?: 'ARCHIVO';
+    }
+
+    public function sePuedePrevisualizar(): bool
+    {
+        return ($this->formato() === 'PDF' && $this->mime_type === 'application/pdf')
+            || ($this->formato() === 'TXT' && $this->mime_type === 'text/plain');
     }
 }

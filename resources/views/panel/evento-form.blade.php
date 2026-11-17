@@ -90,7 +90,9 @@
         @unless (auth()->user()->es('miembro'))
             <label>Estado de publicación
                 <select name="estado">
-                    <option value="borrador">Borrador</option>
+                    @if (! $evento->exists || $evento->estado === 'borrador')
+                        <option value="borrador">Borrador</option>
+                    @endif
                     <option value="publicado" @selected(old('estado', $evento->estado) === 'publicado')>Publicado</option>
                 </select>
             </label>

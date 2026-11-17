@@ -12,11 +12,62 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.nav-links.open, .admin-sidebar.open').forEach((menu) => menu.classList.remove('open'));
         document.querySelectorAll('[aria-expanded="true"]').forEach((button) => button.setAttribute('aria-expanded', 'false'));
     });
-    document.querySelectorAll('form[data-confirmar]').forEach((form) => {
-        form.addEventListener('submit', (event) => {
-            if (!window.confirm(form.dataset.confirmar)) event.preventDefault();
+    const confirmation = document.getElementById('confirmacion-accion');
+    if (confirmation && typeof confirmation.showModal === 'function') {
+        const title = confirmation.querySelector('[data-confirmacion-titulo]');
+        const description = confirmation.querySelector('[data-confirmacion-descripcion]');
+        const accept = confirmation.querySelector('[data-confirmacion-aceptar]');
+        const cancel = confirmation.querySelector('[data-confirmacion-cancelar]');
+        let pendingForm = null;
+        let pendingSubmitter = null;
+        let previousFocus = null;
+
+        document.querySelectorAll('form[data-confirmar]').forEach((form) => {
+            form.addEventListener('submit', (event) => {
+                if (form.dataset.confirmacionLista === '1') {
+                    delete form.dataset.confirmacionLista;
+                    return;
+                }
+
+                event.preventDefault();
+                pendingForm = form;
+                pendingSubmitter = event.submitter || form.querySelector('button[type="submit"], button:not([type]), input[type="submit"]');
+                previousFocus = pendingSubmitter || document.activeElement;
+                const buttonLabel = pendingSubmitter?.textContent?.trim() || pendingSubmitter?.value || 'Confirmar';
+                title.textContent = buttonLabel.replace(/\s+/g, ' ');
+                description.textContent = form.dataset.confirmar;
+                accept.textContent = title.textContent;
+                confirmation.dataset.variante = form.dataset.confirmarVariante || 'normal';
+                confirmation.showModal();
+                cancel.focus();
+            });
         });
-    });
+
+        cancel.addEventListener('click', () => confirmation.close());
+        confirmation.addEventListener('close', () => {
+            const focusTarget = previousFocus;
+            pendingForm = null;
+            pendingSubmitter = null;
+            previousFocus = null;
+            if (focusTarget?.isConnected) focusTarget.focus();
+        });
+        accept.addEventListener('click', () => {
+            if (!pendingForm) return;
+            const form = pendingForm;
+            const submitter = pendingSubmitter;
+            pendingForm = null;
+            pendingSubmitter = null;
+            confirmation.close();
+            form.dataset.confirmacionLista = '1';
+            if (typeof form.requestSubmit === 'function') {
+                if (submitter?.form === form) form.requestSubmit(submitter);
+                else form.requestSubmit();
+                queueMicrotask(() => delete form.dataset.confirmacionLista);
+            } else {
+                form.submit();
+            }
+        });
+    }
     const accountType = document.getElementById('tipo_cuenta');
     if (accountType) {
         const updateRegistration = () => document.querySelectorAll('[data-solo-miembro]').forEach((field) => {
@@ -27,6 +78,26 @@ document.addEventListener('DOMContentLoaded', () => {
         accountType.addEventListener('change', updateRegistration);
         updateRegistration();
     }
+    document.querySelectorAll('[data-publicacion-form]').forEach((form) => {
+        const state = form.querySelector('[data-publicacion-estado]');
+        const featured = form.querySelector('[data-publicacion-destacada]');
+        const save = form.querySelector('[data-publicacion-guardar]');
+        const remove = form.querySelector('[data-publicacion-quitar]');
+        const file = form.querySelector('[data-publicacion-imagen]');
+        const url = form.querySelector('[data-publicacion-imagen-url]');
+        const syncState = () => {
+            const published = state.value === 'publicado';
+            featured.disabled = !published;
+            if (!published) featured.checked = false;
+            save.textContent = published ? 'Guardar y publicar' : 'Guardar borrador';
+        };
+        state.addEventListener('change', syncState);
+        syncState();
+        if (remove) {
+            file.addEventListener('change', () => { if (file.files.length) remove.checked = false; });
+            url.addEventListener('input', () => { if (url.value.trim()) remove.checked = false; });
+        }
+    });
     const prepareImages = () => document.querySelectorAll('.media img').forEach((image) => {
         const update = () => {
             image.hidden = !image.naturalWidth;

@@ -16,7 +16,7 @@ class EventoPolicy
     public function create(User $user): bool
     {
         return $user->estaActivo() && (! $user->es(RolNombre::MIEMBRO->value)
-            || $user->miembro?->rama?->slug === 'rovers');
+            || ($user->miembro?->activo && $user->miembro?->rama?->slug === 'rovers'));
     }
 
     public function view(User $user, Evento $evento): bool
@@ -34,12 +34,15 @@ class EventoPolicy
 
         return $user->es(RolNombre::MIEMBRO->value) && ($evento->propuesto_por_miembro_id === $user->miembro_id
             || ($evento->estado === 'publicado' && $user->miembro_id
-                && $evento->ramas()->whereKey($user->miembro->rama_id)->exists()));
+                && $evento->ramas()->whereKey($user->miembro->rama_id)->exists())
+            || (in_array($evento->estado, ['publicado', 'cancelado'], true) && $user->miembro_id
+                && $evento->inscripciones()->where('miembro_id', $user->miembro_id)->where('estado', 'inscrito')->exists()));
     }
 
     public function update(User $user, Evento $evento): bool
     {
-        return ! in_array($evento->estado, ['cancelado', 'finalizado'], true)
+        return $user->estaActivo()
+            && in_array($evento->estado, ['borrador', 'publicado'], true)
             && ($evento->estado !== 'publicado' || $evento->fecha_inicio->isFuture())
             && ($user->es(RolNombre::DISTRITAL->value)
                 || ($user->es(RolNombre::GRUPO->value) && $evento->creado_por === $user->id));
@@ -47,12 +50,20 @@ class EventoPolicy
 
     public function review(User $user, Evento $evento): bool
     {
-        return $user->es(RolNombre::DISTRITAL->value)
-            || ($user->es(RolNombre::GRUPO->value) && $evento->proponente?->grupo_id === $user->grupo_id);
+        return $user->estaActivo() && $evento->estado === 'propuesto'
+            && ($user->es(RolNombre::DISTRITAL->value)
+                || ($user->es(RolNombre::GRUPO->value) && $evento->proponente?->grupo_id === $user->grupo_id));
     }
 
     public function register(User $user, Evento $evento): bool
     {
-        return $user->es(RolNombre::MIEMBRO->value) && (bool) $user->miembro_id;
+        return $user->estaActivo() && $user->es(RolNombre::MIEMBRO->value)
+            && (bool) $user->miembro?->activo;
+    }
+
+    public function cancelRegistration(User $user, Evento $evento): bool
+    {
+        return $user->estaActivo() && $user->es(RolNombre::MIEMBRO->value)
+            && (bool) $user->miembro_id;
     }
 }

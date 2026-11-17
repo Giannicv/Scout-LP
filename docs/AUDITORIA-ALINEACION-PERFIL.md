@@ -55,7 +55,7 @@ contacto público.
 7. La combinación evento/miembro es única y una cancelación puede reactivarse sin duplicarla.
 8. Solo un miembro Rover puede proponer `proyecto_rover`; la propuesta nace como `propuesto`.
 9. Dirigentes autorizados pueden aprobar o rechazar propuestas Rover.
-10. Solo el rol distrital publica o elimina archivos de biblioteca; usuarios activos pueden leerlos.
+10. El dirigente distrital publica y gestiona todos los recursos de biblioteca; el dirigente de grupo publica y gestiona los suyos. Los usuarios activos pueden consultar y descargar los recursos publicados.
 11. Aprobaciones, rechazos, publicaciones e inscripciones críticas quedan auditadas.
 12. PostgreSQL guarda rutas y metadata de biblioteca; los binarios viven en Laravel Storage.
 

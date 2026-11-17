@@ -22,8 +22,10 @@ class UserPolicy
 
     public function updateStatus(User $actor, User $usuario): bool
     {
-        return $actor->id !== $usuario->id && ($actor->es(RolNombre::DISTRITAL->value)
-            || ($actor->es(RolNombre::GRUPO->value) && $usuario->es(RolNombre::MIEMBRO->value)
-                && $usuario->grupo_id === $actor->grupo_id));
+        return $actor->estaActivo() && $actor->id !== $usuario->id
+            && $usuario->es(RolNombre::MIEMBRO->value) && (bool) $usuario->miembro_id
+            && in_array($usuario->estado, ['activo', 'suspendido'], true)
+            && ($actor->es(RolNombre::DISTRITAL->value)
+                || ($actor->es(RolNombre::GRUPO->value) && $usuario->grupo_id === $actor->grupo_id));
     }
 }

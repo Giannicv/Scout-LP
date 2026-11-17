@@ -32,7 +32,7 @@ class EventoRequest extends FormRequest
             'inscripcion_habilitada' => 'nullable|boolean',
             'inscripcion_desde' => 'nullable|date|before:fecha_inicio',
             'inscripcion_hasta' => 'nullable|date|after_or_equal:inscripcion_desde|before_or_equal:fecha_inicio',
-            'estado' => ['nullable', Rule::in([EstadoEvento::BORRADOR->value, EstadoEvento::PUBLICADO->value])],
+            'estado' => ['sometimes', Rule::in([EstadoEvento::BORRADOR->value, EstadoEvento::PUBLICADO->value])],
         ];
     }
 
@@ -40,7 +40,8 @@ class EventoRequest extends FormRequest
     {
         return [function (Validator $validator) {
             if (! $validator->errors()->has('fecha_inicio')
-                && (! $this->route('evento') || $this->input('estado') === EstadoEvento::PUBLICADO->value)
+                && (! $this->route('evento') || $this->route('evento')->estado === EstadoEvento::PUBLICADO->value
+                    || $this->input('estado') === EstadoEvento::PUBLICADO->value)
                 && $this->date('fecha_inicio')?->lte(now())) {
                 $validator->errors()->add('fecha_inicio', 'Un evento nuevo o publicado debe comenzar en una fecha futura.');
             }

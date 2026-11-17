@@ -51,7 +51,7 @@ class AccesoController extends Controller
             $miembro = null;
             if ($request->tipo_cuenta === 'miembro') {
                 $miembro = Miembro::create($request->only('grupo_id', 'rama_id', 'nombre', 'apellido',
-                    'fecha_nacimiento', 'telefono', 'email'));
+                    'fecha_nacimiento', 'telefono', 'email') + ['activo' => false]);
             }
 
             return User::create([

@@ -13,16 +13,38 @@ class PanelController extends Controller
     public function dashboard(Request $request)
     {
         $usuario = $request->user()->load(['rol', 'grupo', 'miembro.rama']);
+        $esMiembro = $usuario->es('miembro');
+        $esDistrital = $usuario->es('dirigente_distrital');
+        $esGrupo = $usuario->es('dirigente_grupo');
+        $consultaEventos = Evento::query()->where('estado', 'publicado')->where('fecha_fin', '>=', now());
+        if ($esMiembro) {
+            $consultaEventos->where(fn ($q) => $q
+                ->whereHas('ramas', fn ($ramas) => $ramas->whereKey($usuario->miembro?->rama_id ?? 0))
+                ->orWhereHas('inscripciones', fn ($inscripciones) => $inscripciones
+                    ->where('miembro_id', $usuario->miembro_id ?? 0)->where('estado', 'inscrito')));
+        }
+
         $datos = [
-            'eventos' => Evento::where('estado', 'publicado')->where('fecha_fin', '>=', now())->count(),
+            'eventos' => (clone $consultaEventos)->count(),
             'recursos' => Recurso::where('estado', 'publicado')->count(),
             'notificaciones' => $usuario->unreadNotifications()->count(),
-            'solicitudes' => $usuario->es('dirigente_distrital')
+            'solicitudes' => $esDistrital
                 ? User::where('estado', 'pendiente')->whereHas('rol', fn ($q) => $q->where('nombre', 'dirigente_grupo'))->count()
-                : ($usuario->es('dirigente_grupo') ? User::where('estado', 'pendiente')->where('grupo_id', $usuario->grupo_id)->whereHas('rol', fn ($q) => $q->where('nombre', 'miembro'))->count() : 0),
-            'miembros' => $usuario->es('dirigente_grupo') ? Miembro::where('grupo_id', $usuario->grupo_id)->where('activo', true)->count() : Miembro::where('activo', true)->count(),
+                : ($esGrupo ? User::where('estado', 'pendiente')->where('grupo_id', $usuario->grupo_id)->whereHas('rol', fn ($q) => $q->where('nombre', 'miembro'))->count() : 0),
+            'miembros' => $esMiembro ? null : Miembro::where('activo', true)
+                ->when($esGrupo, fn ($q) => $q->where('grupo_id', $usuario->grupo_id))->count(),
+            'propuestas' => $esMiembro ? 0 : Evento::where('estado', 'propuesto')
+                ->when($esGrupo, fn ($q) => $q->whereHas('proponente', fn ($miembros) => $miembros->where('grupo_id', $usuario->grupo_id)))
+                ->count(),
         ];
 
-        return view('panel.dashboard', compact('usuario', 'datos'));
+        $eventosProximos = $consultaEventos
+            ->withCount(['inscripciones as inscritos_count' => fn ($q) => $q->where('estado', 'inscrito')])
+            ->when($esMiembro && $usuario->miembro_id, fn ($q) => $q->with(['inscripciones' => fn ($inscripciones) => $inscripciones
+                ->where('miembro_id', $usuario->miembro_id)->where('estado', 'inscrito')]))
+            ->orderBy('fecha_inicio')->limit(3)->get();
+        $avisosRecientes = $usuario->unreadNotifications()->latest()->limit(3)->get();
+
+        return view('panel.dashboard', compact('usuario', 'datos', 'eventosProximos', 'avisosRecientes'));
     }
 }

@@ -1,23 +1,174 @@
-@extends('layouts.panel', ['titulo' => 'Historias y contenido'])
+@extends('layouts.panel', ['titulo' => 'Noticias y contenido'])
 @section('contenido')
-<div class="section-head"><div><p class="eyebrow">CONTENIDO PÚBLICO</p><h2>Historias que inspiran</h2><p class="muted">Las publicaciones marcadas para portada aparecen en la sección “Historias que inspiran” del inicio.</p></div><a class="btn secondary small" href="{{ route('inicio') }}#historias">Ver sección pública</a></div>
-<div class="panel-grid">
-<form method="POST" action="{{ route('publicaciones.noticias.store') }}" class="card">@csrf<h2>Nueva historia o noticia</h2>
-<x-campo nombre="titulo" etiqueta="Título" requerido /><x-campo nombre="resumen" etiqueta="Resumen" tipo="textarea" requerido /><x-campo nombre="contenido" etiqueta="Contenido" tipo="textarea" requerido />
-<label>Categoría<select name="categoria_id"><option value="">Sin categoría</option>@foreach($categorias as $categoria)<option value="{{ $categoria->id }}">{{ $categoria->nombre }}</option>@endforeach</select></label>
-<x-campo nombre="imagen_url" etiqueta="URL de imagen" tipo="url" /><label><input type="checkbox" name="destacada" value="1"> Mostrar en “Historias que inspiran”</label>
-<label>Estado<select name="estado"><option value="borrador">Borrador</option><option value="publicado">Publicada</option></select></label><button class="btn">Guardar publicación</button></form>
-<form method="POST" action="{{ route('publicaciones.categorias.store') }}" class="card">@csrf<h2>Nueva categoría</h2><x-campo nombre="nombre" etiqueta="Nombre" requerido /><button class="btn">Crear categoría</button></form>
-</div>
-<section><h2>Publicaciones</h2>@forelse($noticias as $noticia)<details class="card"><summary><strong>{{ $noticia->titulo }}</strong> · <x-estado :valor="$noticia->estado" /> @if($noticia->destacada)<span class="branch-chip">En portada</span>@endif</summary>
-<form method="POST" action="{{ route('publicaciones.noticias.update', $noticia) }}">@csrf @method('PUT')
-<x-campo nombre="titulo" etiqueta="Título" :valor="$noticia->titulo" requerido /><x-campo nombre="resumen" etiqueta="Resumen" tipo="textarea" :valor="$noticia->resumen" requerido /><x-campo nombre="contenido" etiqueta="Contenido" tipo="textarea" :valor="$noticia->contenido" requerido />
-<label>Categoría<select name="categoria_id"><option value="">Sin categoría</option>@foreach($categorias as $categoria)<option value="{{ $categoria->id }}" @selected($noticia->categoria_id === $categoria->id)>{{ $categoria->nombre }}</option>@endforeach</select></label>
-<x-campo nombre="imagen_url" etiqueta="URL de imagen" tipo="url" :valor="$noticia->imagen_url" /><label><input type="checkbox" name="destacada" value="1" @checked($noticia->destacada)> Mostrar en “Historias que inspiran”</label>
-<label>Estado<select name="estado"><option value="borrador" @selected($noticia->estado === 'borrador')>Borrador</option><option value="publicado" @selected($noticia->estado === 'publicado')>Publicada</option></select></label>
-<button class="btn">Actualizar</button></form><form method="POST" action="{{ route('publicaciones.noticias.destroy', $noticia) }}" data-confirmar="¿Archivar esta noticia?" class="inline-actions">@csrf @method('DELETE')<button class="btn danger">Archivar</button></form>
-</details>@empty<div class="empty-state">No hay noticias.</div>@endforelse
-{{ $noticias->links() }}</section>
-<section><h2>Contenido institucional</h2>@foreach($contenidos as $contenido)<form method="POST" action="{{ route('publicaciones.contenido.update', $contenido) }}" class="card">@csrf @method('PUT')
-<small>{{ $contenido->clave }}</small><x-campo nombre="titulo" etiqueta="Título" :valor="$contenido->titulo" requerido /><label>Contenido<textarea name="contenido" required>{{ $contenido->contenido }}</textarea></label><button class="btn">Actualizar</button></form>@endforeach</section>
+    <header class="publishing-heading">
+        <div>
+            <h2>Publicaciones del distrito</h2>
+            <p>Prepara noticias para el sitio, elige las historias de portada y mantén actualizada la página Nosotros.</p>
+        </div>
+        <a class="btn secondary" href="{{ route('noticias.index') }}" target="_blank" rel="noopener">Ver noticias públicas</a>
+    </header>
+
+    <nav class="publishing-jump" aria-label="Secciones de contenido">
+        <a href="#publicaciones">Publicaciones</a>
+        <a href="#contenido-institucional">Contenido institucional</a>
+        <a href="#categorias">Categorías</a>
+    </nav>
+
+    <details class="publication-composer" id="nueva-publicacion" @if(old('formulario') === 'crear' && $errors->any()) open @endif>
+        <summary>
+            <span><strong>Nueva publicación</strong><small>Escribe una noticia y guárdala como borrador o publícala.</small></span>
+            <span class="publication-composer-action">Crear publicación</span>
+        </summary>
+        <div class="publication-composer-body">
+            @include('panel.partials.form-noticia', ['noticia' => null])
+        </div>
+    </details>
+
+    <section id="publicaciones" class="publication-section" aria-labelledby="publicaciones-titulo">
+        <div class="publication-section-heading">
+            <div>
+                <h2 id="publicaciones-titulo">Publicaciones</h2>
+                <p>{{ $noticias->total() }} {{ $noticias->total() === 1 ? 'resultado' : 'resultados' }} en esta vista</p>
+            </div>
+        </div>
+        <nav class="publication-status-filters" aria-label="Filtrar por estado">
+            @php($parametrosBase = array_filter(['buscar' => $buscar, 'categoria' => $categoriaFiltro], fn ($valor) => $valor !== null && $valor !== ''))
+            @foreach (['' => 'Todas', 'publicado' => 'Publicadas', 'borrador' => 'Borradores', 'archivado' => 'Archivadas'] as $clave => $etiqueta)
+                @php($cantidad = $clave === '' ? $conteos->sum() : (int) ($conteos[$clave] ?? 0))
+                <a href="{{ route('publicaciones.index', $parametrosBase + ($clave !== '' ? ['estado' => $clave] : [])) }}"
+                    @class(['active' => $estadoFiltro === $clave])>
+                    {{ $etiqueta }} <span>{{ $cantidad }}</span>
+                </a>
+            @endforeach
+        </nav>
+
+        <form method="GET" action="{{ route('publicaciones.index') }}" class="publication-filters">
+            @if ($estadoFiltro !== '') <input type="hidden" name="estado" value="{{ $estadoFiltro }}"> @endif
+            <div class="field">
+                <label for="buscar-publicacion">Buscar por título o resumen</label>
+                <input id="buscar-publicacion" name="buscar" type="search" maxlength="100" value="{{ $buscar }}" placeholder="Buscar publicación">
+            </div>
+            <div class="field">
+                <label for="categoria-publicacion">Categoría</label>
+                <select id="categoria-publicacion" name="categoria">
+                    <option value="">Todas las categorías</option>
+                    @foreach ($categorias as $categoria)
+                        <option value="{{ $categoria->id }}" @selected($categoriaFiltro === (string) $categoria->id)>{{ $categoria->nombre }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <button class="btn secondary" type="submit">Aplicar filtros</button>
+            @if ($buscar !== '' || $categoriaFiltro !== '')
+                <a class="publication-clear" href="{{ route('publicaciones.index', $estadoFiltro !== '' ? ['estado' => $estadoFiltro] : []) }}">Limpiar</a>
+            @endif
+        </form>
+
+        @if ($noticias->isNotEmpty())
+            <div class="publication-list">
+                @foreach ($noticias as $noticia)
+                    <details class="publication-entry" @if(old('formulario') === 'editar-'.$noticia->id && $errors->any()) open @endif>
+                        <summary>
+                            <span class="publication-initial" aria-hidden="true">{{ mb_strtoupper(mb_substr($noticia->titulo, 0, 1)) }}</span>
+                            <span class="publication-entry-main">
+                                <strong>{{ $noticia->titulo }}</strong>
+                                <small>{{ $noticia->categoria?->nombre ?? 'Sin categoría' }} · Actualizada {{ $noticia->updated_at->translatedFormat('d M Y') }}</small>
+                            </span>
+                            <span class="publication-entry-status">
+                                <x-estado :valor="$noticia->estado" />
+                                @if ($noticia->estado === 'publicado' && $noticia->destacada)
+                                    <span class="publication-featured-tag">En inicio</span>
+                                @endif
+                            </span>
+                            <span class="publication-entry-toggle">{{ $noticia->estado === 'archivado' ? 'Ver archivo' : 'Editar' }}</span>
+                        </summary>
+                        <div class="publication-entry-body">
+                            @if ($noticia->estado === 'archivado')
+                                <p class="publication-archive-note">Esta publicación no aparece en el sitio. Restáurala como borrador para volver a editarla.</p>
+                                <form method="POST" action="{{ route('publicaciones.noticias.restaurar', $noticia) }}"
+                                    data-confirmar="La publicación volverá a borradores y podrás editarla antes de publicarla.">
+                                    @csrf
+                                    <button class="btn secondary" type="submit">Restaurar como borrador</button>
+                                </form>
+                            @else
+                                @if ($noticia->estado === 'publicado')
+                                    <a class="publication-preview-link" href="{{ route('noticias.show', $noticia) }}" target="_blank" rel="noopener">Ver publicación en el sitio</a>
+                                @endif
+                                @include('panel.partials.form-noticia', ['noticia' => $noticia])
+                                <form method="POST" action="{{ route('publicaciones.noticias.destroy', $noticia) }}"
+                                    class="publication-archive-action" data-confirmar="La noticia dejará de aparecer en el sitio público. Podrás restaurarla como borrador."
+                                    data-confirmar-variante="peligro">
+                                    @csrf @method('DELETE')
+                                    <button class="btn danger" type="submit">Archivar publicación</button>
+                                </form>
+                            @endif
+                        </div>
+                    </details>
+                @endforeach
+            </div>
+            <div class="pagination">{{ $noticias->links() }}</div>
+        @else
+            <div class="publication-empty">
+                <h3>{{ $totalPublicaciones ? 'No hay publicaciones para estos filtros' : 'Todavía no hay publicaciones' }}</h3>
+                <p>{{ $totalPublicaciones ? 'Prueba con otra búsqueda o cambia el estado.' : 'Abre “Nueva publicación” para preparar la primera noticia del distrito.' }}</p>
+                @if ($totalPublicaciones) <a class="btn secondary" href="{{ route('publicaciones.index') }}">Ver todas</a> @endif
+            </div>
+        @endif
+    </section>
+
+    <section id="contenido-institucional" class="publication-section" aria-labelledby="institucional-titulo">
+        <div class="publication-section-heading">
+            <div>
+                <h2 id="institucional-titulo">Contenido institucional</h2>
+                <p>Estos textos aparecen en la página Nosotros.</p>
+            </div>
+            <a class="text-link" href="{{ route('nosotros') }}" target="_blank" rel="noopener">Ver página Nosotros</a>
+        </div>
+        <div class="institutional-grid">
+            @foreach ($contenidos as $contenido)
+                @php($recuperarContenido = old('formulario') === 'contenido-'.$contenido->id)
+                <form method="POST" action="{{ route('publicaciones.contenido.update', $contenido) }}" class="institutional-editor">
+                    @csrf @method('PUT')
+                    <input type="hidden" name="formulario" value="contenido-{{ $contenido->id }}">
+                    <p class="institutional-key">{{ match ($contenido->clave) { 'mision' => 'Misión', 'vision' => 'Visión', default => ucfirst($contenido->clave) } }}</p>
+                    <div class="field">
+                        <label for="titulo-contenido-{{ $contenido->id }}">Título</label>
+                        <input id="titulo-contenido-{{ $contenido->id }}" name="titulo" maxlength="180" required
+                            value="{{ $recuperarContenido ? old('titulo', $contenido->titulo) : $contenido->titulo }}">
+                    </div>
+                    <div class="field">
+                        <label for="texto-contenido-{{ $contenido->id }}">Texto</label>
+                        <textarea id="texto-contenido-{{ $contenido->id }}" name="contenido" rows="7" maxlength="20000" required>{{ $recuperarContenido ? old('contenido', $contenido->contenido) : $contenido->contenido }}</textarea>
+                    </div>
+                    <div class="institutional-footer">
+                        <small>Última actualización: {{ $contenido->updated_at->translatedFormat('d M Y') }}</small>
+                        <button class="btn secondary" type="submit">Guardar texto</button>
+                    </div>
+                </form>
+            @endforeach
+        </div>
+    </section>
+
+    <section id="categorias" class="publication-section" aria-labelledby="categorias-titulo">
+        <div class="publication-section-heading">
+            <div>
+                <h2 id="categorias-titulo">Categorías</h2>
+                <p>Organiza las noticias para que la comunidad pueda encontrarlas.</p>
+            </div>
+        </div>
+        <form method="POST" action="{{ route('publicaciones.categorias.store') }}" class="publication-category-form">
+            @csrf
+            <input type="hidden" name="formulario" value="categoria">
+            <div class="field">
+                <label for="nombre-categoria">Nombre de la categoría</label>
+                <input id="nombre-categoria" name="nombre" maxlength="80" required
+                    value="{{ old('formulario') === 'categoria' ? old('nombre') : '' }}" placeholder="Por ejemplo, servicio comunitario">
+            </div>
+            <button class="btn secondary" type="submit">Crear categoría</button>
+        </form>
+        <div class="publication-categories">
+            @foreach ($categorias as $categoria)
+                <span>{{ $categoria->nombre }} <small>{{ $categoria->noticias_por_categoria_id_count }} noticias</small></span>
+            @endforeach
+        </div>
+    </section>
 @endsection

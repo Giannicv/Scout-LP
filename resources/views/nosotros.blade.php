@@ -58,7 +58,7 @@
                     LO QUE NOS GUÍA
                 </p>
                 <h2>
-                    Nuestra misión.
+                    {{ $contenidos->get('mision')?->titulo ?? 'Nuestra misión' }}
                 </h2>
                 <p>
                     {{ $contenidos->get('mision')?->contenido }}
@@ -69,7 +69,7 @@
                     HACIA DÓNDE VAMOS
                 </p>
                 <h2>
-                    Nuestra visión.
+                    {{ $contenidos->get('vision')?->titulo ?? 'Nuestra visión' }}
                 </h2>
                 <p>
                     {{ $contenidos->get('vision')?->contenido }}

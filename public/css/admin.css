@@ -12,7 +12,8 @@ body{font-size:15px}
 .admin-topbar .actions{font-size:13px}
 .admin-main{padding:32px;width:min(1450px,100%);margin:auto}
 .admin-main h2{font-size:24px}
-.admin-menu{display:none;padding:8px 12px;font-size:20px;line-height:1}
+.admin-menu{display:none;padding:8px 12px;line-height:1}
+.admin-menu svg{width:22px;height:22px}
 .table-wrap table{width:100%;border-collapse:collapse;font-size:13px;text-align:left}
 th{background:var(--caqui-100);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
 td,th{padding:16px;border-bottom:1px solid var(--borde);vertical-align:middle}
