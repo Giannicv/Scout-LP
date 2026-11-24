@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es" data-resolution="landscape">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=1920,height=1080">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+  <style>
+    *{box-sizing:border-box}html,body{margin:0;width:1920px;height:1080px;overflow:hidden}body{background:#211629;color:#f8f4ef;font-family:Outfit,Inter,Arial,sans-serif}
+    #root,.shot{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden}.shot{isolation:isolate}h1,h2,p{margin:0}
+    .intro-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 63%}.intro-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(24,16,31,.88),rgba(24,16,31,.6) 43%,rgba(24,16,31,.04))}
+    .intro-copy{position:absolute;left:112px;top:160px;width:1000px}.eyebrow{font:700 28px/1.2 Inter,Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#cbb0dd}
+    .intro h1{margin-top:42px;font-size:116px;line-height:1.02;font-weight:800;letter-spacing:-.045em}.rule{height:8px;width:180px;background:#ae82d1;margin:46px 0 26px}.caption{font:400 34px/1.35 Inter,Arial,sans-serif;max-width:520px}
+    .ui{background:#211629}.ui.light{background:#f3ece5;color:#241829}.frame{position:absolute;top:72px;bottom:72px;width:1320px;overflow:hidden;border:2px solid #5c4869;box-shadow:0 24px 72px rgba(0,0,0,.28);background:#17101c}
+    .ui.left .frame{left:626px;border-radius:24px 0 0 24px}.ui.right .frame{left:-26px;border-radius:0 24px 24px 0}.frame img{position:absolute;top:0;left:50%;width:1600px;height:900px;max-width:none;object-fit:cover;transform:translateX(-50%)}
+    .band{position:absolute;top:0;bottom:0;width:680px;z-index:2;display:flex;flex-direction:column;justify-content:center;padding:96px}.left .band{left:0;background:#211629}.right .band{right:0;background:#f3ece5}.band h2{font-size:94px;line-height:1.04;letter-spacing:-.042em;font-weight:800;max-width:510px}.band .eyebrow{margin-bottom:30px;font-size:28px}.light .band .eyebrow{color:#71449b}.band .rule{width:110px;height:7px;margin:40px 0 30px}.band .caption{font-size:33px}.light .band .caption{color:#4c3c55}.dark .band .caption{color:#e6d9ed}
+    .library-book{position:absolute;left:925px;top:285px;width:460px;height:520px;border:10px solid #f3ece5;border-radius:14px;overflow:hidden;z-index:3;box-shadow:0 28px 58px rgba(0,0,0,.42)}.library-book img{width:100%;height:100%;object-fit:cover}
+    .closing{background:#2e1a47;display:flex;align-items:center;justify-content:center}.closing:before{content:'';position:absolute;left:0;top:0;width:26px;height:100%;background:#bca786}.end-lockup{display:flex;align-items:center;gap:46px;width:1260px}.end-lockup img{width:170px;height:170px}.brand{font-size:84px;font-weight:800;line-height:1;letter-spacing:-.035em}.district{margin-top:20px;font:400 38px/1.2 Inter,Arial,sans-serif;color:#dacbe6}.motto{margin-top:36px;font:700 36px/1.2 Inter,Arial,sans-serif;color:#d4c1a2;text-transform:uppercase;letter-spacing:.16em}
+    /* Product screens stay whole and at their captured 1600 × 900 size. */
+    .ui .frame,.ui.left .frame,.ui.right .frame{left:160px;top:160px;bottom:auto;width:1600px;height:900px;border-radius:18px}
+    .ui .frame img{left:0;top:0;width:1600px;height:900px;transform:none!important}.ui .frame img.second{opacity:0}
+    .ui .band,.ui.left .band,.ui.right .band{left:0;right:auto;top:0;bottom:auto;width:1920px;height:160px;padding:18px 160px;display:grid;grid-template-columns:220px 780px 1fr;align-items:center;column-gap:24px}
+    .ui .band .eyebrow{margin:0;font-size:28px}.ui .band h2{font-size:60px;line-height:1.1;white-space:nowrap;max-width:none}.ui .band .rule{display:none}.ui .band .caption{font-size:28px;line-height:1.25;max-width:550px}
+    .library-book{display:none}
+  </style>
+</head>
+<body>
+<div data-hf-id="hf-j7pz" id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1920" data-height="1080">
+  <section data-hf-id="hf-ku8s" id="intro" class="shot clip intro" data-start="0" data-duration="4" data-track-index="0">
+    <img data-hf-id="hf-kdmr" class="intro-photo" src="assets/photos/scout-salar.jpg" alt="Scouts en el Salar"><div data-hf-id="hf-izvi" class="intro-shade"></div>
+    <div data-hf-id="hf-4cje" id="intro-copy" class="intro-copy"><div data-hf-id="hf-y8u5" class="eyebrow">Distrito Scout La Paz</div><h1 data-hf-id="hf-5q1h">La aventura<br data-hf-id="hf-x5px">comienza aquí</h1><div data-hf-id="hf-a46i" class="rule"></div><p data-hf-id="hf-kj6q" class="caption">Un espacio para organizar, participar y seguir creciendo.</p></div>
+  </section>
+  <section data-hf-id="hf-sn4u" id="admin" class="shot clip ui left dark" data-start="4" data-duration="6" data-track-index="0">
+    <div data-hf-id="hf-4mjq" class="frame" data-layout-allow-overflow=""><img data-hf-id="hf-6ume" id="admin-screen" src="assets/screens/distrito-eventos.png" alt="Agenda real del dirigente distrital"><img id="admin-second" class="second" src="assets/screens/distrito-evento-crear.png" alt="Formulario real para crear un evento"></div>
+    <div data-hf-id="hf-xcqc" id="admin-band" class="band"><div data-hf-id="hf-omg1" class="eyebrow">Dirigentes</div><h2 data-hf-id="hf-y3df">Organiza actividades</h2><div data-hf-id="hf-ya9a" class="rule"></div><p data-hf-id="hf-cjow" class="caption">Publica y gestiona los eventos del distrito.</p></div>
+  </section>
+  <section data-hf-id="hf-in1p" id="member" class="shot clip ui right light" data-start="10" data-duration="6" data-track-index="0">
+    <div data-hf-id="hf-i2ei" class="frame" data-layout-allow-overflow=""><img data-hf-id="hf-iw8k" id="member-screen" src="assets/screens/miembro-eventos.png" alt="Agenda real del miembro"><img id="member-second" class="second" src="assets/screens/miembro-evento-detalle.png" alt="Detalle real de la actividad para el miembro"></div>
+    <div data-hf-id="hf-79x7" id="member-band" class="band"><div data-hf-id="hf-tixj" class="eyebrow">Miembros</div><h2 data-hf-id="hf-qxlm">Encuentra tu actividad</h2><div data-hf-id="hf-yokb" class="rule"></div><p data-hf-id="hf-99ny" class="caption">Consulta fechas, detalles y disponibilidad.</p></div>
+  </section>
+  <section data-hf-id="hf-d4ql" id="library" class="shot clip ui left dark" data-start="16" data-duration="6" data-track-index="0">
+    <div data-hf-id="hf-igpj" class="frame" data-layout-allow-overflow=""><img data-hf-id="hf-tmon" id="library-screen" src="assets/screens/miembro-biblioteca.png" alt="Biblioteca digital real"></div>
+    <div data-hf-id="hf-v4bk" id="library-band" class="band"><div data-hf-id="hf-iasd" class="eyebrow">Recursos</div><h2 data-hf-id="hf-uzdk">Biblioteca digital</h2><div data-hf-id="hf-z2vc" class="rule"></div><p data-hf-id="hf-jksu" class="caption">Explora, abre y descarga materiales.</p></div>
+  </section>
+  <section data-hf-id="hf-a2nw" id="summary" class="shot clip ui right light" data-start="22" data-duration="4" data-track-index="0">
+    <div data-hf-id="hf-iv0k" class="frame" data-layout-allow-overflow=""><img data-hf-id="hf-m8mq" id="summary-screen" src="assets/screens/distrito-resumen.png" alt="Resumen real del dirigente distrital"><img id="summary-second" class="second" src="assets/screens/distrito-miembros.png" alt="Vista real de miembros del distrito"></div>
+    <div data-hf-id="hf-xk1t" id="summary-band" class="band"><div data-hf-id="hf-ebrg" class="eyebrow">Distrito</div><h2 data-hf-id="hf-3a6i">Vista del distrito</h2><div data-hf-id="hf-waq5" class="rule"></div><p data-hf-id="hf-l0ry" class="caption">Actividades, miembros y decisiones en un lugar.</p></div>
+  </section>
+  <section data-hf-id="hf-ka8w" id="closing" class="shot clip closing" data-start="26" data-duration="4" data-track-index="0">
+    <div data-hf-id="hf-anuy" id="end-lockup" class="end-lockup"><img data-hf-id="hf-b8oq" src="assets/photos/marca.svg" alt="Marca Scouts de Bolivia"><div data-hf-id="hf-yeow"><div data-hf-id="hf-rb5v" class="brand">Scouts de Bolivia</div><div data-hf-id="hf-blpw" class="district">Distrito Scout La Paz</div><div data-hf-id="hf-6gqk" class="motto">Siempre listos</div></div></div>
+  </section>
+  <audio id="music" class="clip" src="assets/bgm/track-30s.mp3" data-start="0" data-duration="30" data-track-index="1" data-volume="1"></audio>
+</div>
+<script>
+window.__timelines=window.__timelines||{};
+const tl=gsap.timeline({paused:true});
+tl.fromTo('#intro-copy',{x:-90,opacity:0},{x:0,opacity:1,duration:.7,ease:'power3.out'},.25);
+tl.fromTo('#admin-band',{y:-20,opacity:0},{y:0,opacity:1,duration:.45,ease:'power3.out'},4.15);
+tl.fromTo('#admin-screen',{opacity:0},{opacity:1,duration:.3,ease:'power1.out'},4.05);
+tl.to('#admin-screen',{opacity:0,duration:.3},7);
+tl.fromTo('#admin-second',{opacity:0},{opacity:1,duration:.3},7);
+tl.fromTo('#member-band',{y:-20,opacity:0},{y:0,opacity:1,duration:.45,ease:'power3.out'},10.15);
+tl.fromTo('#member-screen',{opacity:0},{opacity:1,duration:.3,ease:'power1.out'},10.05);
+tl.to('#member-screen',{opacity:0,duration:.3},13);
+tl.fromTo('#member-second',{opacity:0},{opacity:1,duration:.3},13);
+tl.fromTo('#library-band',{y:-20,opacity:0},{y:0,opacity:1,duration:.45,ease:'power3.out'},16.15);
+tl.fromTo('#library-screen',{opacity:0},{opacity:1,duration:.3,ease:'power1.out'},16.05);
+tl.fromTo('#summary-band',{y:-20,opacity:0},{y:0,opacity:1,duration:.45,ease:'power3.out'},22.15);
+tl.fromTo('#summary-screen',{opacity:0},{opacity:1,duration:.3,ease:'power1.out'},22.05);
+tl.to('#summary-screen',{opacity:0,duration:.3},24);
+tl.fromTo('#summary-second',{opacity:0},{opacity:1,duration:.3},24);
+tl.fromTo('#end-lockup',{scale:.83,opacity:0},{scale:1,opacity:1,duration:.8,ease:'back.out(1.5)'},26.18);
+window.__timelines.main=tl;tl.seek(0);
+</script>
+</body>
+</html>

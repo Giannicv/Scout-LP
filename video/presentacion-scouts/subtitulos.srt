@@ -1,0 +1,29 @@
+1
+00:00:00,000 --> 00:00:03,999
+La aventura comienza aquí.
+Un espacio para organizar, participar y seguir creciendo.
+
+2
+00:00:04,000 --> 00:00:09,999
+Dirigentes: organiza actividades.
+Publica y gestiona los eventos del distrito.
+
+3
+00:00:10,000 --> 00:00:15,999
+Miembros: encuentra tu actividad.
+Consulta fechas, detalles y disponibilidad.
+
+4
+00:00:16,000 --> 00:00:21,999
+Recursos: biblioteca digital.
+Explora, abre y descarga materiales.
+
+5
+00:00:22,000 --> 00:00:25,999
+Vista del distrito.
+Actividades, miembros y decisiones en un lugar.
+
+6
+00:00:26,000 --> 00:00:29,999
+Scouts de Bolivia. Distrito Scout La Paz.
+Siempre listos.
