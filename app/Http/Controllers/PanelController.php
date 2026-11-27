@@ -10,6 +10,14 @@ use Illuminate\Http\Request;
 
 class PanelController extends Controller
 {
+    public function cuenta(Request $request)
+    {
+        $usuario = $request->user()->load(['rol', 'grupo']);
+        abort_if($usuario->es('miembro'), 403);
+
+        return view('panel.cuenta', compact('usuario'));
+    }
+
     public function dashboard(Request $request)
     {
         $usuario = $request->user()->load(['rol', 'grupo', 'miembro.rama']);
@@ -29,7 +37,7 @@ class PanelController extends Controller
             'recursos' => Recurso::where('estado', 'publicado')->count(),
             'notificaciones' => $usuario->unreadNotifications()->count(),
             'solicitudes' => $esDistrital
-                ? User::where('estado', 'pendiente')->whereHas('rol', fn ($q) => $q->where('nombre', 'dirigente_grupo'))->count()
+                ? User::where('estado', 'pendiente')->count()
                 : ($esGrupo ? User::where('estado', 'pendiente')->where('grupo_id', $usuario->grupo_id)->whereHas('rol', fn ($q) => $q->where('nombre', 'miembro'))->count() : 0),
             'miembros' => $esMiembro ? null : Miembro::where('activo', true)
                 ->when($esGrupo, fn ($q) => $q->where('grupo_id', $usuario->grupo_id))->count(),

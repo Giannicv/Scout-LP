@@ -19,7 +19,8 @@
             <a href="{{ route('solicitudes.index') }}" @class(['active' => request()->routeIs('solicitudes.*')])>Solicitudes</a>
             <a href="{{ route('miembros.index') }}" @class(['active' => request()->routeIs('miembros.*')])>Miembros</a>
         @endif
-        @if(auth()->user()->es('miembro'))<a href="{{ route('perfil') }}" @class(['active' => request()->routeIs('perfil*')])>Mi perfil</a>@endif
+        @if(auth()->user()->es('dirigente_distrital'))<a href="{{ route('dirigentes.index') }}" @class(['active' => request()->routeIs('dirigentes.*')])>Dirigentes</a>@endif
+        @if(auth()->user()->es('miembro'))<a href="{{ route('perfil') }}" @class(['active' => request()->routeIs('perfil*')])>Mi perfil</a>@else<a href="{{ route('cuenta') }}" @class(['active' => request()->routeIs('cuenta')])>Mi cuenta</a>@endif
         @if(auth()->user()->es('dirigente_distrital'))<a href="{{ route('publicaciones.index') }}" @class(['active' => request()->routeIs('publicaciones.*')])>Noticias y contenido</a>@endif
         <a href="{{ route('biblioteca.index') }}" @class(['active' => request()->routeIs('biblioteca.*')])>Biblioteca</a>
         @php($notificacionesPendientes = auth()->user()->unreadNotifications()->count())

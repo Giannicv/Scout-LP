@@ -30,9 +30,14 @@
         <div class="field">
             <label for="vigencia">Fecha</label>
             <select id="vigencia" name="vigencia">
-                <option value="">Todos</option>
-                <option value="proximos" @selected(request('vigencia') === 'proximos')>Próximos y en curso</option>
-                <option value="finalizados" @selected(request('vigencia') === 'finalizados')>Finalizados</option>
+                @if ($usuario->es('miembro'))
+                    <option value="proximos" @selected(! request()->filled('vigencia') || request('vigencia') === 'proximos')>Vigentes</option>
+                    <option value="finalizados" @selected(request('vigencia') === 'finalizados')>Historial</option>
+                @else
+                    <option value="">Todos</option>
+                    <option value="proximos" @selected(request('vigencia') === 'proximos')>Próximos y en curso</option>
+                    <option value="finalizados" @selected(request('vigencia') === 'finalizados')>Finalizados</option>
+                @endif
             </select>
         </div>
         <button class="btn secondary">Aplicar filtros</button>

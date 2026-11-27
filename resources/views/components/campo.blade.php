@@ -31,6 +31,16 @@
                 </option>
             @endforeach
         </select>
+    @elseif ($tipo === 'password')
+        <div class="password-input">
+            <input id="campo-{{ $nombre }}" name="{{ $nombre }}" type="password"
+                autocomplete="{{ $nombre === 'actual' || request()->routeIs('login') ? 'current-password' : 'new-password' }}"
+                @required($requerido) @error($nombre) aria-invalid="true" @enderror>
+            <button type="button" class="password-visibility" data-password-toggle="campo-{{ $nombre }}"
+                aria-controls="campo-{{ $nombre }}" aria-label="Mostrar {{ mb_strtolower($etiqueta) }}" aria-pressed="false">
+                <x-icono nombre="eye" /><span>Mostrar</span>
+            </button>
+        </div>
     @else
         <input id="campo-{{ $nombre }}"
             name="{{ $nombre }}"

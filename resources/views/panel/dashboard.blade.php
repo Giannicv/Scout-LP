@@ -49,7 +49,7 @@
                     @if ($datos['solicitudes'] > 0 || $datos['propuestas'] > 0)
                         <div class="overview-task-list">
                             @if ($datos['solicitudes'] > 0)
-                                <a href="{{ route('solicitudes.index') }}"><span class="overview-task-icon"><x-icono nombre="users" /></span><span><strong>{{ $datos['solicitudes'] }} {{ $datos['solicitudes'] === 1 ? 'solicitud pendiente' : 'solicitudes pendientes' }}</strong><small>{{ $esDistrital ? 'Dirigentes que esperan revisión' : 'Miembros de tu grupo que esperan revisión' }}</small></span><span class="overview-task-link">Revisar</span></a>
+                                <a href="{{ route('solicitudes.index') }}"><span class="overview-task-icon"><x-icono nombre="users" /></span><span><strong>{{ $datos['solicitudes'] }} {{ $datos['solicitudes'] === 1 ? 'solicitud pendiente' : 'solicitudes pendientes' }}</strong><small>{{ $esDistrital ? 'Cuentas del distrito que esperan revisión' : 'Miembros de tu grupo que esperan revisión' }}</small></span><span class="overview-task-link">Revisar</span></a>
                             @endif
                             @if ($datos['propuestas'] > 0)
                                 <a href="{{ route('eventos.index', ['estado' => 'propuesto']) }}"><span class="overview-task-icon"><x-icono nombre="calendar" /></span><span><strong>{{ $datos['propuestas'] }} {{ $datos['propuestas'] === 1 ? 'propuesta Rover' : 'propuestas Rover' }}</strong><small>Actividades por aprobar o rechazar</small></span><span class="overview-task-link">Revisar</span></a>
@@ -97,6 +97,7 @@
                     <a href="{{ route('miembros.index') }}"><x-icono nombre="users" /> Miembros</a>
                 @endunless
                 @if ($esDistrital) <a href="{{ route('publicaciones.index') }}"><x-icono nombre="book" /> Noticias y contenido</a> @endif
+                @if ($esDistrital) <a href="{{ route('dirigentes.index') }}"><x-icono nombre="users" /> Dirigentes de grupo</a> @endif
                 @if ($esMiembro) <a href="{{ route('perfil') }}"><x-icono nombre="users" /> Mi perfil</a> @endif
             </section>
             <section class="overview-account" aria-labelledby="cuenta-titulo"><h2 id="cuenta-titulo">Tu cuenta</h2>

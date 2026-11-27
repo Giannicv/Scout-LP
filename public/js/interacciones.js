@@ -78,6 +78,54 @@ document.addEventListener('DOMContentLoaded', () => {
         accountType.addEventListener('change', updateRegistration);
         updateRegistration();
     }
+    document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+        const input = document.getElementById(button.dataset.passwordToggle);
+        if (!input) return;
+        button.addEventListener('click', () => {
+            const visible = input.type === 'password';
+            input.type = visible ? 'text' : 'password';
+            button.setAttribute('aria-pressed', String(visible));
+            button.setAttribute('aria-label', `${visible ? 'Ocultar' : 'Mostrar'} ${input.name === 'password_confirmation' ? 'confirmación de contraseña' : 'contraseña'}`);
+            button.querySelector('span').textContent = visible ? 'Ocultar' : 'Mostrar';
+            input.focus();
+        });
+    });
+    const registration = document.querySelector('[data-registro-form]');
+    if (registration) {
+        const password = registration.querySelector('[name="password"]');
+        const confirmation = registration.querySelector('[name="password_confirmation"]');
+        const match = registration.querySelector('[data-password-match]');
+        const rules = {
+            length: (value) => value.length >= 6,
+            letters: (value) => /[A-Za-z]/.test(value),
+            numbers: (value) => /[0-9]/.test(value),
+        };
+        const update = () => {
+            let valid = true;
+            Object.entries(rules).forEach(([name, check]) => {
+                const met = check(password.value);
+                const item = registration.querySelector(`[data-password-rule="${name}"]`);
+                item.dataset.met = String(met);
+                item.setAttribute('aria-label', `${item.textContent.trim()}: ${met ? 'listo' : 'pendiente'}`);
+                if (!met) valid = false;
+            });
+            const matches = confirmation.value !== '' && confirmation.value === password.value;
+            match.dataset.state = confirmation.value === '' ? 'waiting' : (matches ? 'valid' : 'invalid');
+            match.textContent = confirmation.value === '' ? 'Repite la contraseña para confirmarla.'
+                : (matches ? 'Las contraseñas coinciden.' : 'Las contraseñas no coinciden.');
+            password.setAttribute('aria-invalid', String(password.value !== '' && !valid));
+            confirmation.setAttribute('aria-invalid', String(confirmation.value !== '' && !matches));
+            return valid && matches;
+        };
+        password.addEventListener('input', update);
+        confirmation.addEventListener('input', update);
+        registration.addEventListener('submit', (event) => {
+            if (update()) return;
+            event.preventDefault();
+            (Object.values(rules).every((check) => check(password.value)) ? confirmation : password).focus();
+        });
+        update();
+    }
     document.querySelectorAll('[data-publicacion-form]').forEach((form) => {
         const state = form.querySelector('[data-publicacion-estado]');
         const featured = form.querySelector('[data-publicacion-destacada]');

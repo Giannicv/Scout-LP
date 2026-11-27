@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccesoController;
 use App\Http\Controllers\BibliotecaController;
+use App\Http\Controllers\DirigenteController;
 use App\Http\Controllers\EventoController;
 use App\Http\Controllers\MiembroController;
 use App\Http\Controllers\NotificacionController;
@@ -34,10 +35,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/salir', [AccesoController::class, 'salir'])->name('salir');
     Route::post('/password', [AccesoController::class, 'cambiarPassword'])->name('password.cambiar');
     Route::get('/panel', [PanelController::class, 'dashboard'])->name('panel');
+    Route::get('/panel/cuenta', [PanelController::class, 'cuenta'])->name('cuenta');
     Route::resource('/panel/eventos', EventoController::class)->except('destroy');
     Route::post('/panel/eventos/{evento}/aprobar', [EventoController::class, 'aprobar'])->name('eventos.aprobar');
     Route::post('/panel/eventos/{evento}/rechazar', [EventoController::class, 'rechazar'])->name('eventos.rechazar');
     Route::post('/panel/eventos/{evento}/cancelar', [EventoController::class, 'cancelarEvento'])->name('eventos.cancelar-evento');
+    Route::post('/panel/eventos/{evento}/archivar', [EventoController::class, 'archivar'])->name('eventos.archivar');
+    Route::post('/panel/eventos/{evento}/restaurar-archivo', [EventoController::class, 'restaurarArchivo'])->name('eventos.restaurar-archivo');
     Route::post('/panel/eventos/{evento}/inscripcion', [EventoController::class, 'inscribir'])->name('eventos.inscribir');
     Route::delete('/panel/eventos/{evento}/inscripcion', [EventoController::class, 'cancelar'])->name('eventos.cancelar');
     Route::get('/panel/solicitudes', [SolicitudController::class, 'index'])->name('solicitudes.index');
@@ -55,6 +59,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/panel/notificaciones/leer-todas', [NotificacionController::class, 'leerTodas'])->name('notificaciones.leer-todas');
     Route::post('/panel/notificaciones/{notificacion}/abrir', [NotificacionController::class, 'abrir'])->name('notificaciones.abrir');
     Route::get('/panel/miembros', [MiembroController::class, 'index'])->name('miembros.index');
+    Route::get('/panel/dirigentes', [DirigenteController::class, 'index'])->name('dirigentes.index');
+    Route::get('/panel/dirigentes/crear', [DirigenteController::class, 'create'])->name('dirigentes.create');
+    Route::post('/panel/dirigentes', [DirigenteController::class, 'store'])->name('dirigentes.store');
+    Route::get('/panel/dirigentes/{dirigente}/editar', [DirigenteController::class, 'edit'])->name('dirigentes.edit');
+    Route::put('/panel/dirigentes/{dirigente}', [DirigenteController::class, 'update'])->name('dirigentes.update');
+    Route::post('/panel/dirigentes/{dirigente}/estado', [DirigenteController::class, 'cambiarEstado'])->name('dirigentes.estado');
     Route::post('/panel/usuarios/{usuario}/estado', [MiembroController::class, 'cambiarEstado'])->name('usuarios.estado');
     Route::get('/panel/perfil', [PerfilController::class, 'show'])->name('perfil');
     Route::put('/panel/perfil/telefono', [PerfilController::class, 'actualizarTelefono'])->name('perfil.telefono.update');

@@ -34,12 +34,23 @@ class AccesoRequest extends FormRequest
                 'nombre' => 'required|string|max:100', 'apellido' => 'required|string|max:100',
                 'email' => 'required|email|max:150|unique:usuarios,email',
                 'telefono' => 'nullable|string|max:30', 'terminos' => 'accepted',
-                'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
+                'password' => ['required', 'confirmed', Password::min(6)->letters()->numbers()],
             ],
             'recuperar.enviar' => ['email' => 'required|email|max:150'],
             default => ['token' => 'nullable|string', 'email' => 'nullable|email', 'actual' => 'nullable|string',
-                'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()]],
+                'password' => ['required', 'confirmed', Password::min(6)->letters()->numbers()]],
         };
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.unique' => 'Este correo ya tiene una cuenta o una solicitud registrada. Si acabas de enviarla, espera su revisión.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+            'password.letters' => 'La contraseña debe incluir al menos una letra.',
+            'password.numbers' => 'La contraseña debe incluir al menos un número.',
+        ];
     }
 
     public function withValidator($validator): void

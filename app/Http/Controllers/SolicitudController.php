@@ -18,9 +18,7 @@ class SolicitudController extends Controller
         $usuario = $request->user()->load('rol');
         $this->authorize('viewAny', User::class);
         $consulta = User::with(['rol', 'grupo', 'miembro.rama'])->where('estado', 'pendiente');
-        if ($usuario->es('dirigente_distrital')) {
-            $consulta->whereHas('rol', fn ($q) => $q->where('nombre', 'dirigente_grupo'));
-        } else {
+        if (! $usuario->es('dirigente_distrital')) {
             $consulta->where('grupo_id', $usuario->grupo_id)->whereHas('rol', fn ($q) => $q->where('nombre', 'miembro'));
         }
         $totalPendientes = (clone $consulta)->count();

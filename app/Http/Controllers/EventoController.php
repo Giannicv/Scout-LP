@@ -31,9 +31,12 @@ class EventoController extends Controller
             $consulta->where(function ($q) use ($usuario) {
                 $q->where(fn ($p) => $p->where('estado', 'publicado')->whereHas('ramas', fn ($r) => $r->whereKey($usuario->miembro->rama_id)))
                     ->orWhere('propuesto_por_miembro_id', $usuario->miembro_id)
-                    ->orWhere(fn ($p) => $p->whereIn('estado', ['publicado', 'cancelado'])->whereHas('inscripciones',
+                    ->orWhere(fn ($p) => $p->whereIn('estado', ['publicado', 'cancelado', 'finalizado'])->whereHas('inscripciones',
                         fn ($i) => $i->where('miembro_id', $usuario->miembro_id)->where('estado', 'inscrito')));
             });
+            if (! $request->filled('vigencia')) {
+                $consulta->where('fecha_fin', '>=', now())->where('estado', '!=', EstadoEvento::FINALIZADO->value);
+            }
         } elseif ($usuario->es('dirigente_grupo')) {
             $consulta->where(fn ($q) => $q->where('creado_por', $usuario->id)->orWhere('estado', 'publicado')
                 ->orWhereHas('proponente', fn ($m) => $m->where('grupo_id', $usuario->grupo_id)));
@@ -151,6 +154,9 @@ class EventoController extends Controller
                 if ($evento->estado === EstadoEvento::PUBLICADO->value && $estadoNuevo !== EstadoEvento::PUBLICADO->value) {
                     throw ValidationException::withMessages(['estado' => 'Un evento publicado no puede volver a borrador. Puedes cerrar las inscripciones o cancelar el evento.']);
                 }
+                if ($evento->estado === EstadoEvento::FINALIZADO->value && $estadoNuevo !== EstadoEvento::FINALIZADO->value) {
+                    throw ValidationException::withMessages(['estado' => 'Restaura el evento desde su detalle antes de publicarlo de nuevo.']);
+                }
                 $inscritos = $evento->inscripciones()->where('estado', 'inscrito');
                 if ($datos['cupo'] ?? null) {
                     if ($inscritos->count() > (int) $datos['cupo']) {
@@ -161,7 +167,8 @@ class EventoController extends Controller
                     throw ValidationException::withMessages(['ramas' => 'No puedes quitar una rama con participantes inscritos.']);
                 }
                 $datos['requiere_autorizacion'] = $request->boolean('requiere_autorizacion');
-                $datos['inscripcion_habilitada'] = $request->boolean('inscripcion_habilitada');
+                $datos['inscripcion_habilitada'] = $evento->estado === EstadoEvento::FINALIZADO->value
+                    ? false : $request->boolean('inscripcion_habilitada');
                 if ($imagenNueva = $this->guardarImagen($request)) {
                     $datos['imagen_url'] = $imagenNueva;
                 }
@@ -264,15 +271,41 @@ class EventoController extends Controller
 
     public function cancelarEvento(Request $request, Evento $evento)
     {
-        $this->authorize('update', $evento);
+        $this->authorize('cancelEvent', $evento);
         DB::transaction(function () use ($request, $evento) {
             $evento = Evento::whereKey($evento->id)->lockForUpdate()->firstOrFail();
-            $this->authorize('update', $evento);
+            $this->authorize('cancelEvent', $evento);
             $evento->update(['estado' => EstadoEvento::CANCELADO->value, 'inscripcion_habilitada' => false]);
             $this->auditoria->registrar($request, 'cancelar', 'evento', $evento->id);
         });
 
         return back()->with('estado', 'Evento cancelado y cerrado a nuevas inscripciones.');
+    }
+
+    public function archivar(Request $request, Evento $evento)
+    {
+        $this->authorize('archive', $evento);
+        DB::transaction(function () use ($request, $evento) {
+            $bloqueado = Evento::whereKey($evento->id)->lockForUpdate()->firstOrFail();
+            $this->authorize('archive', $bloqueado);
+            $bloqueado->update(['estado' => EstadoEvento::FINALIZADO->value, 'inscripcion_habilitada' => false]);
+            $this->auditoria->registrar($request, 'archivar', 'evento', $bloqueado->id);
+        });
+
+        return back()->with('estado', 'Evento archivado. Los participantes conservan su historial.');
+    }
+
+    public function restaurarArchivo(Request $request, Evento $evento)
+    {
+        $this->authorize('restoreArchive', $evento);
+        DB::transaction(function () use ($request, $evento) {
+            $bloqueado = Evento::whereKey($evento->id)->lockForUpdate()->firstOrFail();
+            $this->authorize('restoreArchive', $bloqueado);
+            $bloqueado->update(['estado' => EstadoEvento::PUBLICADO->value]);
+            $this->auditoria->registrar($request, 'restaurar_archivo', 'evento', $bloqueado->id);
+        });
+
+        return back()->with('estado', 'Evento restaurado. Las inscripciones siguen cerradas.');
     }
 
     private function guardarImagen(EventoRequest $request): ?string

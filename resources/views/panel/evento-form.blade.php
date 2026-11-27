@@ -94,6 +94,9 @@
                         <option value="borrador">Borrador</option>
                     @endif
                     <option value="publicado" @selected(old('estado', $evento->estado) === 'publicado')>Publicado</option>
+                    @if ($evento->estado === 'finalizado')
+                        <option value="finalizado" selected>Finalizado (archivado)</option>
+                    @endif
                 </select>
             </label>
         @endunless

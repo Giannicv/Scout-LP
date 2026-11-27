@@ -2,7 +2,7 @@
 @section('contenido')
 <h1>Solicita tu cuenta Scout</h1>
 <p>La cuenta quedará pendiente hasta que el dirigente correspondiente la apruebe.</p>
-<form method="POST" action="{{ route('registro.enviar') }}">@csrf
+<form method="POST" action="{{ route('registro.enviar') }}" data-registro-form>@csrf
     <div class="field"><label for="tipo_cuenta">Tipo de cuenta</label><select id="tipo_cuenta" name="tipo_cuenta" required>
         <option value="miembro" @selected(old('tipo_cuenta') === 'miembro')>Miembro</option>
         <option value="dirigente_grupo" @selected(old('tipo_cuenta') === 'dirigente_grupo')>Dirigente de grupo</option>
@@ -19,7 +19,13 @@
     <x-campo nombre="email" etiqueta="Correo electrónico" tipo="email" requerido />
     <x-campo nombre="telefono" etiqueta="Teléfono" tipo="tel" />
     <x-campo nombre="password" etiqueta="Contraseña" tipo="password" requerido />
+    <ul class="password-rules" data-password-rules aria-label="Requisitos de la contraseña">
+        <li data-password-rule="length">Al menos 6 caracteres</li>
+        <li data-password-rule="letters">Al menos una letra</li>
+        <li data-password-rule="numbers">Al menos un número</li>
+    </ul>
     <x-campo nombre="password_confirmation" etiqueta="Confirmar contraseña" tipo="password" requerido />
+    <p class="password-match" data-password-match aria-live="polite">Repite la contraseña para confirmarla.</p>
     <x-campo nombre="terminos" etiqueta="Acepto los términos y el tratamiento de mis datos" tipo="checkbox" requerido />
     <button class="btn">Enviar solicitud</button>
 </form>

@@ -76,14 +76,18 @@
 
         <section class="profile-section" id="seguridad" aria-labelledby="seguridad-titulo">
             <div class="profile-section-heading"><div><h2 id="seguridad-titulo">Seguridad de la cuenta</h2><p>Actualiza tu contraseña cuando lo necesites.</p></div><x-icono nombre="lock" /></div>
-            <p class="profile-security-note">Usa al menos 8 caracteres, con letras y números.</p>
+            <p class="profile-security-note">Usa al menos 6 caracteres, con letras y números.</p>
             <details class="profile-inline-editor" @if(old('formulario') === 'password' && $errors->any()) open @endif>
                 <summary>Cambiar contraseña</summary>
-                <form method="POST" action="{{ route('password.cambiar') }}">
+                <form method="POST" action="{{ route('password.cambiar') }}" data-registro-form>
                     @csrf <input type="hidden" name="formulario" value="password">
-                    <div class="field"><label for="password-actual">Contraseña actual</label><input id="password-actual" type="password" name="actual" autocomplete="current-password" required></div>
-                    <div class="field"><label for="password-nueva">Nueva contraseña</label><input id="password-nueva" type="password" name="password" autocomplete="new-password" minlength="8" required></div>
-                    <div class="field"><label for="password-confirmacion">Confirmar contraseña</label><input id="password-confirmacion" type="password" name="password_confirmation" autocomplete="new-password" minlength="8" required></div>
+                    <x-campo nombre="actual" etiqueta="Contraseña actual" tipo="password" requerido />
+                    <x-campo nombre="password" etiqueta="Nueva contraseña" tipo="password" requerido />
+                    <ul class="password-rules" data-password-rules aria-label="Requisitos de la contraseña">
+                        <li data-password-rule="length">Al menos 6 caracteres</li><li data-password-rule="letters">Al menos una letra</li><li data-password-rule="numbers">Al menos un número</li>
+                    </ul>
+                    <x-campo nombre="password_confirmation" etiqueta="Confirmar contraseña" tipo="password" requerido />
+                    <p class="password-match" data-password-match aria-live="polite">Repite la contraseña para confirmarla.</p>
                     <button class="btn secondary" type="submit">Actualizar contraseña</button>
                 </form>
             </details>

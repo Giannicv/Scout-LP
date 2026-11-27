@@ -24,6 +24,28 @@ php artisan serve
 
 Abre http://127.0.0.1:8000. El servidor web debe publicar la carpeta `public/`.
 
+## Compartir el sitio por un URL público (Cloudflare Tunnel)
+
+El proyecto incluye `start-tunnel.ps1`, que crea un *quick tunnel* sin necesidad de cuenta de
+Cloudflare. Requiere `cloudflared.exe` (instalado en este equipo en
+`C:\Program Files (x86)\cloudflared\`) y el servidor en `127.0.0.1:8000`.
+
+```powershell
+.\start-tunnel.ps1        # muestra el URL https://...trycloudflare.com
+.\start-tunnel.ps1 -Restart  # descarta el túnel actual y genera otro URL
+```
+
+Notas:
+
+- Los logs van a `storage/logs/cloudflared.err.log`; en PowerShell los mensajes de `cloudflared`
+  se muestran como errores porque se escriben en `stderr`, pero no son fallos.
+- Si aparece `429 Tunnelstore request failed`, Cloudflare está limitando la creación de túneles
+  rápidos: espera 1-2 minutos y vuelve a ejecutar el script (ya reintenta automáticamente).
+- El URL cambia cada vez que se reinicia el túnel. Para un dominio fijo hace falta una cuenta de
+  Cloudflare y un túnel nombrado.
+- `bootstrap/app.php` confía los encabezados `X-Forwarded-*` para que Laravel genere assets y
+  redirecciones con `https` y el host público del túnel. El servidor solo escucha en `127.0.0.1`.
+
 ## Cuentas de demostración
 
 Todas usan la contraseña `Scout2026!`.

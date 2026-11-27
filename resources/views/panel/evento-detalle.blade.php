@@ -6,6 +6,20 @@
         <div class="inline-actions">
             @can('update', $evento)
                 <a class="btn secondary" href="{{ route('eventos.edit', $evento) }}">Editar evento</a>
+            @endcan
+            @can('archive', $evento)
+                <form method="POST" action="{{ route('eventos.archivar', $evento) }}"
+                    data-confirmar="El evento dejará de aparecer en la agenda de la rama. Las personas inscritas conservarán el detalle en su historial.">
+                    @csrf<button class="btn secondary">Archivar evento</button>
+                </form>
+            @endcan
+            @can('restoreArchive', $evento)
+                <form method="POST" action="{{ route('eventos.restaurar-archivo', $evento) }}"
+                    data-confirmar="El evento volverá al historial publicado. Las inscripciones permanecerán cerradas.">
+                    @csrf<button class="btn secondary">Restaurar publicación</button>
+                </form>
+            @endcan
+            @can('cancelEvent', $evento)
                 <form method="POST" action="{{ route('eventos.cancelar-evento', $evento) }}"
                     data-confirmar="Las inscripciones se cerrarán y los miembros verán el evento como cancelado."
                     data-confirmar-variante="peligro">

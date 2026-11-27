@@ -35,17 +35,37 @@ class EventoPolicy
         return $user->es(RolNombre::MIEMBRO->value) && ($evento->propuesto_por_miembro_id === $user->miembro_id
             || ($evento->estado === 'publicado' && $user->miembro_id
                 && $evento->ramas()->whereKey($user->miembro->rama_id)->exists())
-            || (in_array($evento->estado, ['publicado', 'cancelado'], true) && $user->miembro_id
+            || (in_array($evento->estado, ['publicado', 'cancelado', 'finalizado'], true) && $user->miembro_id
                 && $evento->inscripciones()->where('miembro_id', $user->miembro_id)->where('estado', 'inscrito')->exists()));
     }
 
     public function update(User $user, Evento $evento): bool
     {
-        return $user->estaActivo()
-            && in_array($evento->estado, ['borrador', 'publicado'], true)
-            && ($evento->estado !== 'publicado' || $evento->fecha_inicio->isFuture())
-            && ($user->es(RolNombre::DISTRITAL->value)
-                || ($user->es(RolNombre::GRUPO->value) && $evento->creado_por === $user->id));
+        return $user->estaActivo() && (
+            $user->es(RolNombre::DISTRITAL->value)
+                ? in_array($evento->estado, ['borrador', 'publicado', 'finalizado'], true)
+                : ($user->es(RolNombre::GRUPO->value) && $evento->creado_por === $user->id
+                    && in_array($evento->estado, ['borrador', 'publicado'], true)
+                    && ($evento->estado !== 'publicado' || $evento->fecha_inicio->isFuture()))
+        );
+    }
+
+    public function archive(User $user, Evento $evento): bool
+    {
+        return $user->estaActivo() && $user->es(RolNombre::DISTRITAL->value)
+            && $evento->estado === 'publicado' && $evento->fecha_fin->isPast();
+    }
+
+    public function cancelEvent(User $user, Evento $evento): bool
+    {
+        return $this->update($user, $evento) && in_array($evento->estado, ['borrador', 'publicado'], true)
+            && $evento->fecha_fin->isFuture();
+    }
+
+    public function restoreArchive(User $user, Evento $evento): bool
+    {
+        return $user->estaActivo() && $user->es(RolNombre::DISTRITAL->value)
+            && $evento->estado === 'finalizado';
     }
 
     public function review(User $user, Evento $evento): bool

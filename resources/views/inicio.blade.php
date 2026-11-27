@@ -5,7 +5,7 @@
         <div class="hero-copy">
             <p class="eyebrow">UNA VIDA DE AVENTURAS</p>
             <h1>
-                Crecer, servir
+                Crecer, servir, explorar
                 <br>
                 y dejar huella.
             </h1>

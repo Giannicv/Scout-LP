@@ -4,7 +4,7 @@
         <div>
             <h2 id="requests-title">Cuentas por revisar</h2>
             <p>{{ $usuario->es('dirigente_distrital')
-                ? 'Revisa a los dirigentes que solicitan acceso a un grupo del distrito.'
+                ? 'Revisa las cuentas de dirigentes de grupo y miembros que solicitan acceso al distrito.'
                 : 'Revisa a los miembros que solicitan acceso a tu grupo.' }}</p>
         </div>
         <div class="requests-count" aria-label="{{ $totalPendientes }} {{ $totalPendientes === 1 ? 'solicitud pendiente' : 'solicitudes pendientes' }}">

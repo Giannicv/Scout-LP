@@ -47,6 +47,55 @@ class FlujosWebScoutTest extends TestCase
             'activo' => false]);
     }
 
+    public function test_una_contrasena_invalida_no_reserva_el_correo_y_se_puede_reintentar(): void
+    {
+        foreach ([
+            ['abc12', 'La contraseña debe tener al menos 6 caracteres.'],
+            ['abcdef', 'La contraseña debe incluir al menos un número.'],
+            ['123456', 'La contraseña debe incluir al menos una letra.'],
+        ] as [$clave, $mensaje]) {
+            $this->post(route('registro.enviar'), $this->registro([
+                'password' => $clave, 'password_confirmation' => $clave,
+            ]))->assertSessionHasErrors(['password' => $mensaje]);
+            $this->assertDatabaseMissing('usuarios', ['email' => 'nuevo@prueba.test']);
+            $this->assertDatabaseMissing('miembros', ['email' => 'nuevo@prueba.test']);
+        }
+
+        $this->post(route('registro.enviar'), $this->registro([
+            'password' => 'Clave1', 'password_confirmation' => 'Clave1',
+        ]))->assertRedirect(route('login'));
+        $this->assertDatabaseHas('usuarios', ['email' => 'nuevo@prueba.test', 'estado' => 'pendiente']);
+        $this->post(route('registro.enviar'), $this->registro([
+            'password' => 'Clave1', 'password_confirmation' => 'Clave1',
+        ]))->assertSessionHasErrors(['email' => 'Este correo ya tiene una cuenta o una solicitud registrada. Si acabas de enviarla, espera su revisión.']);
+        $this->assertSame(1, User::where('email', 'nuevo@prueba.test')->count());
+    }
+
+    public function test_un_envio_con_contrasenas_distintas_no_crea_una_solicitud(): void
+    {
+        $this->post(route('registro.enviar'), $this->registro([
+            'password' => 'Clave1', 'password_confirmation' => 'Clave2',
+        ]))->assertSessionHasErrors('password');
+        $this->assertDatabaseMissing('usuarios', ['email' => 'nuevo@prueba.test']);
+    }
+
+    public function test_la_solicitud_de_miembro_aparece_al_distrito_y_notifica_a_sus_revisores(): void
+    {
+        $grupo = GrupoScout::firstOrFail();
+        $distrital = User::whereHas('rol', fn ($q) => $q->where('nombre', 'dirigente_distrital'))->firstOrFail();
+        $dirigente = User::where('grupo_id', $grupo->id)
+            ->whereHas('rol', fn ($q) => $q->where('nombre', 'dirigente_grupo'))->firstOrFail();
+
+        $this->post(route('registro.enviar'), $this->registro(['grupo_id' => $grupo->id]))
+            ->assertRedirect(route('login'));
+        $this->assertSame(1, $distrital->unreadNotifications()->count());
+        $this->assertSame(1, $dirigente->unreadNotifications()->count());
+        $this->actingAs($distrital)->get(route('solicitudes.index'))
+            ->assertOk()->assertSee('nuevo@prueba.test');
+        $this->get(route('panel'))->assertViewHas('datos', fn ($datos) => $datos['solicitudes'] === 1);
+        $this->get(route('notificaciones.index'))->assertSee('Nueva solicitud de cuenta');
+    }
+
     public function test_aprobar_solicitud_activa_la_membresia_recien_registrada(): void
     {
         $grupo = GrupoScout::firstOrFail();
@@ -55,6 +104,20 @@ class FlujosWebScoutTest extends TestCase
         $dirigente = $this->usuario('dirigente_grupo', $grupo->id);
 
         $this->actingAs($dirigente)->post(route('solicitudes.resolver', $solicitud), [
+            'decision' => 'aprobar',
+        ])->assertSessionHas('estado', 'Solicitud aprobada.');
+        $this->assertDatabaseHas('usuarios', ['id' => $solicitud->id, 'estado' => 'activo']);
+        $this->assertDatabaseHas('miembros', ['id' => $solicitud->miembro_id, 'activo' => true]);
+    }
+
+    public function test_el_distrital_puede_resolver_una_solicitud_de_miembro(): void
+    {
+        $grupo = GrupoScout::firstOrFail();
+        $this->post(route('registro.enviar'), $this->registro(['grupo_id' => $grupo->id]));
+        $solicitud = User::where('email', 'nuevo@prueba.test')->firstOrFail();
+        $distrital = $this->usuario('dirigente_distrital');
+
+        $this->actingAs($distrital)->post(route('solicitudes.resolver', $solicitud), [
             'decision' => 'aprobar',
         ])->assertSessionHas('estado', 'Solicitud aprobada.');
         $this->assertDatabaseHas('usuarios', ['id' => $solicitud->id, 'estado' => 'activo']);
@@ -103,7 +166,7 @@ class FlujosWebScoutTest extends TestCase
         $this->assertSame('activo', $solicitud->fresh()->estado);
     }
 
-    public function test_solicitudes_muestra_la_cola_del_rol_y_busca_solo_dentro_de_su_ambito(): void
+    public function test_solicitudes_muestra_la_cola_del_rol_y_busca_dentro_de_su_ambito(): void
     {
         [$grupoA, $grupoB] = GrupoScout::take(2)->get();
         $dirigente = $this->usuario('dirigente_grupo', $grupoA->id);
@@ -118,7 +181,7 @@ class FlujosWebScoutTest extends TestCase
             ->assertDontSee('Amalia Fuentes')->assertDontSee($dirigentePendiente->email);
         $this->actingAs($this->usuario('dirigente_distrital'))->get(route('solicitudes.index'))
             ->assertOk()->assertSee($dirigentePendiente->email)
-            ->assertDontSee($propia->email)->assertDontSee($ajena->email);
+            ->assertSee($propia->email)->assertSee($ajena->email);
     }
 
     public function test_rechazo_exige_motivo_y_no_se_puede_resolver_dos_veces(): void
@@ -159,6 +222,78 @@ class FlujosWebScoutTest extends TestCase
         $this->actingAs($this->usuario('dirigente_distrital'))->get(route('miembros.index', [
             'grupo' => $grupoB->id, 'rama' => $ramaB->id, 'estado' => 'activo',
         ]))->assertOk()->assertSee('Bruno Flores')->assertDontSee('Andrea Quispe');
+    }
+
+    public function test_el_distrital_ve_dirigentes_y_puede_crear_una_cuenta_de_grupo(): void
+    {
+        $distrital = $this->usuario('dirigente_distrital');
+        $grupo = GrupoScout::firstOrFail();
+        $existente = User::whereHas('rol', fn ($q) => $q->where('nombre', 'dirigente_grupo'))
+            ->where('grupo_id', $grupo->id)->firstOrFail();
+
+        $this->actingAs($distrital)->get(route('dirigentes.index'))
+            ->assertOk()->assertSee($existente->email)->assertSee($grupo->nombre)->assertSee('Crear dirigente');
+        $this->get(route('dirigentes.index', ['grupo' => $grupo->id, 'buscar' => $existente->email]))
+            ->assertOk()->assertSee($existente->email);
+        $this->get(route('dirigentes.create'))->assertOk()->assertSee('Contraseña inicial');
+
+        $datos = ['nombre' => 'Ana', 'apellido' => 'Rojas', 'email' => ' ANA@PRUEBA.TEST ',
+            'grupo_id' => $grupo->id, 'password' => 'Clave12', 'password_confirmation' => 'Clave12'];
+        $this->post(route('dirigentes.store'), $datos)->assertRedirect(route('dirigentes.index'));
+        $creado = User::where('email', 'ana@prueba.test')->firstOrFail();
+        $this->assertTrue($creado->es('dirigente_grupo'));
+        $this->assertSame($grupo->id, $creado->grupo_id);
+        $this->assertSame('activo', $creado->estado);
+        $this->assertTrue(Hash::check('Clave12', $creado->password_hash));
+        $this->assertDatabaseHas('auditoria', ['accion' => 'crear_dirigente', 'entidad_id' => (string) $creado->id]);
+
+        $this->post(route('dirigentes.store'), $datos)->assertSessionHasErrors('email');
+        $this->assertSame(1, User::where('email', 'ana@prueba.test')->count());
+    }
+
+    public function test_solo_el_distrital_edita_y_controla_el_acceso_de_dirigentes_de_grupo(): void
+    {
+        $grupoA = GrupoScout::firstOrFail();
+        $grupoB = GrupoScout::where('id', '!=', $grupoA->id)->firstOrFail();
+        $dirigente = $this->usuario('dirigente_grupo', $grupoA->id);
+        $otro = $this->usuario('dirigente_grupo', $grupoA->id);
+        $miembro = $this->usuario('miembro', $grupoA->id);
+        $datos = ['nombre' => 'Nueva', 'apellido' => 'Dirigente', 'email' => 'nueva@prueba.test',
+            'grupo_id' => $grupoB->id];
+
+        $this->actingAs($otro)->get(route('dirigentes.index'))->assertForbidden();
+        $this->get(route('dirigentes.create'))->assertForbidden();
+        $this->post(route('dirigentes.store'), $datos + ['password' => 'Clave12',
+            'password_confirmation' => 'Clave12'])->assertForbidden();
+        $this->put(route('dirigentes.update', $dirigente), $datos)->assertForbidden();
+        $this->post(route('dirigentes.estado', $dirigente), ['estado' => 'suspendido'])->assertForbidden();
+        $this->actingAs($miembro)->get(route('dirigentes.index'))->assertForbidden();
+
+        $distrital = $this->usuario('dirigente_distrital');
+        $this->actingAs($distrital)->get(route('dirigentes.edit', $dirigente))->assertOk();
+        $this->put(route('dirigentes.update', $dirigente), $datos)->assertRedirect(route('dirigentes.index'));
+        $dirigente->refresh();
+        $this->assertSame($grupoB->id, $dirigente->grupo_id);
+        $this->assertSame('nueva@prueba.test', $dirigente->email);
+        $this->assertSame(2, $dirigente->version_acceso);
+        $this->post(route('dirigentes.estado', $dirigente), ['estado' => 'suspendido'])->assertRedirect();
+        $this->assertSame('suspendido', $dirigente->fresh()->estado);
+        $this->post(route('dirigentes.estado', $dirigente), ['estado' => 'activo'])->assertRedirect();
+        $this->assertSame('activo', $dirigente->fresh()->estado);
+        $this->post(route('dirigentes.estado', $miembro), ['estado' => 'suspendido'])->assertForbidden();
+    }
+
+    public function test_el_dirigente_puede_cambiar_la_contrasena_inicial_desde_mi_cuenta(): void
+    {
+        $dirigente = $this->usuario('dirigente_grupo', GrupoScout::firstOrFail()->id);
+        $this->actingAs($dirigente)->get(route('cuenta'))->assertOk()
+            ->assertSee('Cambiar contraseña')->assertSee('Contraseña actual');
+        $this->post(route('password.cambiar'), ['actual' => 'Password1', 'password' => 'Nueva12',
+            'password_confirmation' => 'Nueva12'])->assertRedirect();
+        $this->assertTrue(Hash::check('Nueva12', $dirigente->fresh()->password_hash));
+        $this->flushSession();
+        $this->actingAs($this->usuario('miembro', GrupoScout::first()->id))
+            ->get(route('cuenta'))->assertForbidden();
     }
 
     public function test_suspender_y_reactivar_miembro_actualiza_cuenta_y_membresia(): void
@@ -382,6 +517,52 @@ class FlujosWebScoutTest extends TestCase
             'fecha_inicio' => now()->subHours(2)->format('Y-m-d H:i:s'),
             'fecha_fin' => now()->subHour()->format('Y-m-d H:i:s'),
         ]))->assertSessionHasErrors('fecha_inicio');
+    }
+
+    public function test_evento_terminado_se_puede_corregir_y_archivar_sin_perder_inscripciones(): void
+    {
+        $rama = Rama::firstOrFail();
+        $distrital = $this->usuario('dirigente_distrital');
+        $miembro = $this->usuarioMiembro($rama);
+        $evento = $this->eventoPublicado([$rama->id], ['titulo' => 'Actividad pasada',
+            'fecha_inicio' => now()->subDays(2), 'fecha_fin' => now()->subDay()]);
+        \DB::table('inscripciones_evento')->insert(['evento_id' => $evento->id,
+            'miembro_id' => $miembro->miembro_id, 'estado' => 'inscrito', 'inscrito_en' => now()->subDays(3),
+            'created_at' => now(), 'updated_at' => now()]);
+
+        $this->actingAs($miembro)->get(route('eventos.index'))->assertDontSee('Actividad pasada');
+        $this->get(route('eventos.index', ['vigencia' => 'finalizados']))->assertSee('Actividad pasada');
+        $this->actingAs($distrital)->get(route('eventos.edit', $evento))->assertOk();
+        $this->put(route('eventos.update', $evento), $this->datosEvento([
+            'titulo' => 'Actividad corregida', 'fecha_inicio' => $evento->fecha_inicio->format('Y-m-d H:i:s'),
+            'fecha_fin' => $evento->fecha_fin->format('Y-m-d H:i:s'),
+        ]))->assertSessionHasNoErrors();
+        $this->assertSame('Actividad corregida', $evento->fresh()->titulo);
+
+        $this->post(route('eventos.archivar', $evento))->assertRedirect();
+        $this->assertSame('finalizado', $evento->fresh()->estado);
+        $this->assertDatabaseHas('inscripciones_evento', ['evento_id' => $evento->id,
+            'miembro_id' => $miembro->miembro_id, 'estado' => 'inscrito']);
+        $this->actingAs($miembro)->get(route('eventos.index'))->assertDontSee('Actividad corregida');
+        $this->get(route('eventos.index', ['vigencia' => 'finalizados']))->assertSee('Actividad corregida');
+        $this->get(route('eventos.show', $evento))->assertOk();
+        $this->actingAs($distrital)->post(route('eventos.restaurar-archivo', $evento))->assertRedirect();
+        $this->assertSame('publicado', $evento->fresh()->estado);
+        $this->assertFalse($evento->fresh()->inscripcion_habilitada);
+    }
+
+    public function test_solo_el_distrital_archiva_actividades_ya_finalizadas(): void
+    {
+        $rama = Rama::firstOrFail();
+        $grupo = GrupoScout::firstOrFail();
+        $dirigente = $this->usuario('dirigente_grupo', $grupo->id);
+        $evento = $this->eventoPublicado([$rama->id], ['creado_por' => $dirigente->id,
+            'fecha_inicio' => now()->subDays(2), 'fecha_fin' => now()->subDay()]);
+        $this->actingAs($dirigente)->get(route('eventos.edit', $evento))->assertForbidden();
+        $this->post(route('eventos.archivar', $evento))->assertForbidden();
+        $distrital = $this->usuario('dirigente_distrital');
+        $proximo = $this->eventoPublicado([$rama->id]);
+        $this->actingAs($distrital)->post(route('eventos.archivar', $proximo))->assertForbidden();
     }
 
     public function test_evento_admite_imagen_y_valida_el_cierre_de_inscripciones(): void
@@ -880,7 +1061,7 @@ class FlujosWebScoutTest extends TestCase
             ->assertSee('Aviso para grupo')->assertDontSee('Aviso distrital')
             ->assertViewHas('datos', fn ($datos) => $datos['solicitudes'] === 1 && $datos['propuestas'] === 1);
         $this->actingAs($distrital)->get(route('panel'))->assertOk()
-            ->assertViewHas('datos', fn ($datos) => $datos['solicitudes'] === 1 && $datos['propuestas'] === 2);
+            ->assertViewHas('datos', fn ($datos) => $datos['solicitudes'] === 3 && $datos['propuestas'] === 2);
     }
 
     public function test_miembro_actualiza_su_telefono_y_sus_contactos_sin_acceder_a_los_ajenos(): void

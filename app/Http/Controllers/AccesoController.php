@@ -46,7 +46,7 @@ class AccesoController extends Controller
 
     public function registrar(AccesoRequest $request)
     {
-        $usuario = DB::transaction(function () use ($request) {
+        DB::transaction(function () use ($request) {
             $rol = Rol::where('nombre', $request->tipo_cuenta)->firstOrFail();
             $miembro = null;
             if ($request->tipo_cuenta === 'miembro') {
@@ -54,16 +54,20 @@ class AccesoController extends Controller
                     'fecha_nacimiento', 'telefono', 'email') + ['activo' => false]);
             }
 
-            return User::create([
+            $usuario = User::create([
                 'rol_id' => $rol->id, 'grupo_id' => $request->grupo_id, 'miembro_id' => $miembro?->id,
                 'nombre' => $request->nombre, 'apellido' => $request->apellido, 'email' => $request->email,
                 'password_hash' => $request->password, 'estado' => 'pendiente',
             ]);
+            $revisores = User::where('estado', 'activo')
+                ->whereHas('rol', fn ($q) => $q->where('nombre', 'dirigente_distrital'));
+            if ($usuario->es('miembro')) {
+                $revisores->orWhere(fn ($q) => $q->where('estado', 'activo')
+                    ->where('grupo_id', $usuario->grupo_id)
+                    ->whereHas('rol', fn ($roles) => $roles->where('nombre', 'dirigente_grupo')));
+            }
+            $revisores->get()->each->notify(new SolicitudCuentaRecibida($usuario));
         });
-        $revisores = $usuario->es('dirigente_grupo')
-            ? User::whereHas('rol', fn ($q) => $q->where('nombre', 'dirigente_distrital'))->where('estado', 'activo')->get()
-            : User::whereHas('rol', fn ($q) => $q->where('nombre', 'dirigente_grupo'))->where('grupo_id', $usuario->grupo_id)->where('estado', 'activo')->get();
-        $revisores->each->notify(new SolicitudCuentaRecibida($usuario));
 
         return redirect()->route('login')->with('estado', 'Solicitud registrada. Podrás ingresar cuando sea aprobada.');
     }
